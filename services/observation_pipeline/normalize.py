@@ -1,4 +1,3 @@
-"""Deterministic normalization before observation validation."""
 from __future__ import annotations
 import unicodedata
 from datetime import datetime, timezone
