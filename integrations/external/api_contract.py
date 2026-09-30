@@ -1,0 +1,2 @@
+from packages.contracts.ecosystem import Capability
+PUBLIC_CAPABILITIES=frozenset({Capability.QUERY_ENTITY,Capability.QUERY_EVENT,Capability.QUERY_WORLD_STATE,Capability.QUERY_CHANGES,Capability.QUERY_SIGNALS,Capability.QUERY_EVIDENCE,Capability.QUERY_PROVENANCE,Capability.QUERY_REGION})
