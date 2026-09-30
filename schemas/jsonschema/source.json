@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://tinlance.com/world-intelligence/schemas/source.schema.json",
+  "title":"World Intelligence Source",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["id","name","canonical_uri","source_type","enabled"],
+  "properties":{
+    "id":{"type":"string","minLength":1},
+    "name":{"type":"string","minLength":1},
+    "canonical_uri":{"type":"string","format":"uri"},
+    "source_type":{"type":"string","minLength":1},
+    "enabled":{"type":"boolean"},
+    "expected_interval_seconds":{"type":["integer","null"],"minimum":1},
+    "license_reference":{"type":["string","null"]}
+  }
+}
