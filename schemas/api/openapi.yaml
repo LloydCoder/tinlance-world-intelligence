@@ -1,0 +1,12 @@
+openapi: 3.1.0
+info:
+  title: Tinlance World Intelligence API
+  version: 1.0.0
+paths:
+  /v1/entities: {get: {responses: {"200": {description: Entity query}}}}
+  /v1/events: {get: {responses: {"200": {description: Event query}}}}
+  /v1/world-state: {get: {responses: {"200": {description: Historical world-state query}}}}
+  /v1/changes: {get: {responses: {"200": {description: Change query}}}}
+  /v1/signals: {get: {responses: {"200": {description: Signal query}}}}
+  /v1/evidence: {get: {responses: {"200": {description: Evidence query}}}}
+  /v1/provenance: {get: {responses: {"200": {description: Provenance query}}}}
