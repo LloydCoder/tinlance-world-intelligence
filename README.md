@@ -322,3 +322,36 @@ The repository foundation is continuously checked by GitHub Actions.
 The repository is under active development. Architecture will evolve through implementation evidence, adversarial testing, operational measurements, and real workload requirements.
 
 The objective is a **traceable, temporal, geospatial, evidence-backed representation of changing real-world state** that can safely serve humans, applications, analytical systems, and governed agents.
+
+
+## Implemented foundation
+
+Phase 0 and Phase 1 are implemented in the current repository boundary:
+
+- versioned Python contracts for sources, acquisition, artifacts, and source health;
+- universal ontology enums for entities, events, relationships, and intelligence objects;
+- SHA-256 content identity and a reference artifact ledger with deduplication semantics;
+- source registry with canonical-URI uniqueness;
+- source-health state tracking with explicit degradation/unavailability transitions;
+- acquisition interface plus deterministic URL preflight security checks;
+- PostgreSQL + PostGIS schema for source registry, artifact ledger, retrieval references,
+  source health, and schema metadata;
+- JSON Schemas for source and raw-artifact contracts;
+- repository security baseline and database-backed CI verification;
+- CI action references pinned to immutable commit SHAs.
+
+### Phase 0-1 invariants
+
+The raw artifact is the exact acquired byte sequence. Hashing occurs before parsing or
+normalization. Deduplication is global by content hash, while every source retrieval is
+retained separately for provenance. A not-modified retrieval does not create a new artifact.
+
+The acquisition security helper is a preflight layer, not the complete SSRF boundary.
+Concrete network adapters must perform connection-time DNS/IP validation, redirect
+revalidation, credential isolation, resource limits, and parser isolation.
+
+See:
+- docs/architecture/phase-0-1.md
+- docs/operations/phase-0-1-verification.md
+- docs/security/acquisition-boundary.md
+- db/README.md
