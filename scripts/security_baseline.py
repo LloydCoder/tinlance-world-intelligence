@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]
 TEXT_EXTENSIONS={".py",".yml",".yaml",".json",".toml",".md",".sql",".sh",".env.example"}
 FORBIDDEN_PATTERNS=[
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"),
-    re.compile(r"(?i)(?:aws_secret_access_key|private_key|client_secret|service_role)\s*[:=]\s*['"][^'"]{12,}['"]"),
+    re.compile(r'''(?i)(?:aws_secret_access_key|private_key|client_secret|service_role)\s*[:=]\s*["'][^"']{12,}["']'''),
 ]
 
 def main()->int:
