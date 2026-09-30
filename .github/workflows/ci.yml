@@ -67,4 +67,4 @@ jobs:
           PGPASSWORD: postgres
         run: |
           test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM pg_extension WHERE extname='postgis';")" = "1"
-          test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM information_schema.tables WHERE table_schema='world_intelligence';")" = "29"
+          test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM information_schema.tables WHERE table_schema='world_intelligence';")" = "27"
