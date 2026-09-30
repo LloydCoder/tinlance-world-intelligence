@@ -54,9 +54,10 @@ jobs:
         run: psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0001_foundation_source_artifact.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0002_observation.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0003_entity.sql
+          psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0004_event.sql
       - name: Verify schema
         env:
           PGPASSWORD: postgres
         run: |
           test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM pg_extension WHERE extname='postgis';")" = "1"
-          test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM information_schema.tables WHERE table_schema='world_intelligence';")" = "10"
+          test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM information_schema.tables WHERE table_schema='world_intelligence';")" = "13"
