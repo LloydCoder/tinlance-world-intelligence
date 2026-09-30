@@ -355,3 +355,40 @@ See:
 - docs/operations/phase-0-1-verification.md
 - docs/security/acquisition-boundary.md
 - db/README.md
+
+
+## Implemented intelligence fabric
+
+Phases 0–15 are now implemented as a serial, CI-gated progression:
+
+1. Foundation — contracts, ontology, CI, database, security.
+2. Source & Artifact — registry, acquisition boundary, immutable SHA-256 artifact ledger, deduplication, source health.
+3. Observation — extraction contracts, normalization, validation, provenance.
+4. Entity Intelligence — identifiers, aliases, conservative resolution, merge/split history, confidence.
+5. Event Intelligence — event ontology, extraction boundary, temporal correlation, lifecycle, provenance.
+6. Temporal World State — valid time, observation time, knowledge-as-of, snapshots.
+7. Geospatial Intelligence — PostGIS geometry, GiST indexes, geofences, spatial-temporal query contracts.
+8. Relationship Intelligence — temporal relationships, bounded traversal, relationship changes.
+9. Change Engine — before/after comparison, classification, significance, source-vs-world-change distinction.
+10. Correlation & Contradiction — source dependency, contradiction records, corroboration.
+11. Signal Engine — versioned rules, deterministic evaluation, explanations, evaluation metrics.
+12. Intelligence API — typed query service, HTTP routing contract, OpenAPI surface.
+13. World Monitor — first-party map and investigation views for events, entities, timeline, changes, signals, evidence and provenance.
+14. Replay & Backtesting — manifest-driven replay, deterministic backtests, regression fixtures.
+15. Advanced Intelligence — source-independence graph, anomaly candidates, intelligence cards and explanation lineage.
+16. Tinlance Ecosystem — ReconOS, TADS, Agent OS, Agent Platform, external API and SDK capability boundaries.
+
+### Final semantic boundary
+
+`SOURCE → RAW ARTIFACT → OBSERVATION → ENTITY / EVENT / RELATIONSHIP → TEMPORAL WORLD STATE → CHANGE → CORRELATION / CONTRADICTION → SIGNAL → INTELLIGENCE → API / WORLD MONITOR / GOVERNED CONSUMERS`
+
+World Intelligence remains the information/evidence substrate. It does not become an
+authorization or execution authority. Agent Platform remains the governance boundary.
+
+### Standards alignment
+
+The architecture is informed by W3C PROV for provenance, OWL-Time for temporal concepts,
+OGC API Features/Moving Features for geospatial interoperability, PostGIS for spatial
+persistence/querying, JSON Schema 2020-12 for contracts, and OpenTelemetry semantic
+conventions for observability. These standards guide interoperability without coupling
+the canonical model to a particular vendor implementation.
