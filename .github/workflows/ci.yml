@@ -48,7 +48,7 @@ jobs:
           persist-credentials: false
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
-      - name: Install PostGIS in database service\n        run: docker exec $(docker ps -q --filter label=org.github.actions.service=postgres) bash -lc 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-16-postgis-3'\n      - name: Apply foundation migration
+      - name: Install PostGIS in database service\n        run: docker exec $(docker ps -q --filter ancestor=postgres:16) bash -lc 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-16-postgis-3'\n      - name: Apply foundation migration
         env:
           PGPASSWORD: postgres
         run: psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0001_foundation_source_artifact.sql
