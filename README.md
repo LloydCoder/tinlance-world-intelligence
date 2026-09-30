@@ -313,6 +313,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Apache-2.0. See [LICENSE](LICENSE).
 
+## CI verification
+
+The repository foundation is continuously checked by GitHub Actions.
+
 ## Status
 
 The repository is under active development. Architecture will evolve through implementation evidence, adversarial testing, operational measurements, and real workload requirements.
