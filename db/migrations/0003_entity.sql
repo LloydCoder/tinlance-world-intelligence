@@ -1,0 +1,6 @@
+BEGIN;
+CREATE TABLE world_intelligence.entities(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),entity_type text NOT NULL,canonical_name text NOT NULL CHECK(btrim(canonical_name)<>''),status text NOT NULL CHECK(status IN('active','merged','split','retired')),confidence numeric(5,4) NOT NULL CHECK(confidence BETWEEN 0 AND 1),created_at timestamptz NOT NULL DEFAULT now(),updated_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE world_intelligence.entity_identifiers(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),entity_id uuid NOT NULL REFERENCES world_intelligence.entities(id) ON DELETE RESTRICT,scheme text NOT NULL,value text NOT NULL,normalized_value text NOT NULL,UNIQUE(scheme,normalized_value));
+CREATE TABLE world_intelligence.entity_aliases(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),entity_id uuid NOT NULL REFERENCES world_intelligence.entities(id) ON DELETE RESTRICT,alias text NOT NULL,normalized_alias text NOT NULL,UNIQUE(normalized_alias));
+CREATE TABLE world_intelligence.entity_resolution_events(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),operation text NOT NULL CHECK(operation IN('merge','split')),from_entity_ids uuid[] NOT NULL,to_entity_ids uuid[] NOT NULL,reason text NOT NULL,confidence numeric(5,4) NOT NULL CHECK(confidence BETWEEN 0 AND 1),created_at timestamptz NOT NULL DEFAULT now());
+COMMIT;
