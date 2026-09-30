@@ -1,0 +1,5 @@
+BEGIN;
+CREATE TABLE world_intelligence.source_dependencies(source_id uuid NOT NULL REFERENCES world_intelligence.sources(id) ON DELETE RESTRICT,depends_on_source_id uuid NOT NULL REFERENCES world_intelligence.sources(id) ON DELETE RESTRICT,relationship text NOT NULL,PRIMARY KEY(source_id,depends_on_source_id),CHECK(source_id<>depends_on_source_id));
+CREATE TABLE world_intelligence.contradictions(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),assertion_ids uuid[] NOT NULL,reason text NOT NULL,severity numeric(5,4) NOT NULL CHECK(severity BETWEEN 0 AND 1),created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE world_intelligence.corroborations(assertion_id uuid PRIMARY KEY REFERENCES world_intelligence.temporal_assertions(id) ON DELETE RESTRICT,supporting_assertion_ids uuid[] NOT NULL,level text NOT NULL CHECK(level IN('none','partial','independent','contradicted')),independent_count integer NOT NULL CHECK(independent_count>=0));
+COMMIT;
