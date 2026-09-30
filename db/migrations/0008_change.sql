@@ -1,0 +1,4 @@
+BEGIN;
+CREATE TABLE world_intelligence.changes(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),subject_ref text NOT NULL,change_type text NOT NULL CHECK(change_type IN('created','removed','modified','moved','relationship_changed','source_correction','source_outage')),detected_at timestamptz NOT NULL,effective_at timestamptz,before_value jsonb,after_value jsonb,significance numeric(5,4) NOT NULL CHECK(significance BETWEEN 0 AND 1),evidence_ids uuid[] NOT NULL DEFAULT '{}',world_change boolean NOT NULL,created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX changes_subject_time_idx ON world_intelligence.changes(subject_ref,detected_at DESC);
+COMMIT;
