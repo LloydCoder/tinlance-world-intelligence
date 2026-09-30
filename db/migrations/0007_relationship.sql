@@ -1,0 +1,6 @@
+BEGIN;
+CREATE TABLE world_intelligence.relationships(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),subject_id uuid NOT NULL REFERENCES world_intelligence.entities(id) ON DELETE RESTRICT,predicate text NOT NULL,object_id uuid NOT NULL REFERENCES world_intelligence.entities(id) ON DELETE RESTRICT,valid_from timestamptz NOT NULL,valid_to timestamptz,status text NOT NULL CHECK(status IN('active','ended','retracted')),confidence numeric(5,4) NOT NULL CHECK(confidence BETWEEN 0 AND 1),provenance_id uuid,created_at timestamptz NOT NULL DEFAULT now(),CHECK(valid_to IS NULL OR valid_to>valid_from),CHECK(subject_id<>object_id));
+CREATE INDEX relationships_subject_idx ON world_intelligence.relationships(subject_id,valid_from);
+CREATE INDEX relationships_object_idx ON world_intelligence.relationships(object_id,valid_from);
+CREATE TABLE world_intelligence.relationship_changes(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),relationship_id uuid NOT NULL REFERENCES world_intelligence.relationships(id) ON DELETE RESTRICT,change_type text NOT NULL,detected_at timestamptz NOT NULL,before_value jsonb,after_value jsonb);
+COMMIT;
