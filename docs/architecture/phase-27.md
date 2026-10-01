@@ -5,7 +5,7 @@ Phase 27 is the final planned roadmap phase. It converts the accumulated archite
 ## Validation scope
 
 - phase-index completeness through Phase 27;
-- contiguous database migrations 0001–0020;
+- contiguous database migrations 0001–0021;
 - expected schema-table count of 43 in CI;
 - immutable CI action pinning;
 - required security, license, contribution, API-contract, and architecture documents;
