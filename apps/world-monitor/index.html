@@ -1,1 +1,40 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tinlance World Monitor</title><link rel="stylesheet" href="styles.css"></head><body><header><strong>Tinlance World Monitor</strong><nav><button data-view="map">Map</button><button data-view="events">Events</button><button data-view="entities">Entities</button><button data-view="timeline">Timeline</button><button data-view="changes">Changes</button><button data-view="signals">Signals</button><button data-view="evidence">Evidence</button><button data-view="provenance">Provenance</button></nav></header><main><section id="map" class="view active"><h1>World map</h1><svg id="world-map" viewBox="0 0 1000 500" role="img" aria-label="World intelligence map"><rect width="1000" height="500"/><g id="markers"></g></svg></section><section id="events" class="view"><h1>Event stream</h1><div id="event-list"></div></section><section id="entities" class="view"><h1>Entity explorer</h1><div id="entity-list"></div></section><section id="timeline" class="view"><h1>Timeline</h1><input id="timeline-range" type="range" min="0" max="100" value="100"></section><section id="changes" class="view"><h1>Changes</h1><div id="change-list"></div></section><section id="signals" class="view"><h1>Signals</h1><div id="signal-list"></div></section><section id="evidence" class="view"><h1>Evidence inspector</h1><pre id="evidence-view"></pre></section><section id="provenance" class="view"><h1>Provenance</h1><pre id="provenance-view"></pre></section></main><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"><meta name="referrer" content="no-referrer"><meta name="description" content="Tinlance World Monitor — provenance-first world intelligence investigation surface">
+<title>Tinlance World Monitor</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div><strong>Tinlance World Monitor</strong><small>World Intelligence investigation surface</small></div>
+  <nav aria-label="Primary views">
+    <button data-view="map">Map</button><button data-view="events">Events</button><button data-view="entities">Entities</button>
+    <button data-view="timeline">Timeline</button><button data-view="changes">Changes</button><button data-view="signals">Signals</button>
+    <button data-view="evidence">Evidence</button><button data-view="provenance">Provenance</button>
+  </nav>
+</header>
+<div class="workspace">
+  <aside class="filters" aria-label="Investigation controls">
+    <label for="search">Search</label><input id="search" type="search" placeholder="Entity, event, signal…">
+    <label for="severity">Signal severity</label><select id="severity"><option value="">All</option><option>low</option><option>medium</option><option>high</option></select>
+    <button id="save-investigation" class="primary">Save investigation</button>
+    <button id="clear-investigation">Clear saved state</button>
+    <div id="source-health" class="status" aria-live="polite"></div>
+  </aside>
+  <main>
+    <section id="map" class="view active"><h1>World map</h1><p class="muted">Spatial events are rendered from canonical event coordinates.</p>
+      <svg id="world-map" viewBox="0 0 1000 500" role="img" aria-label="World intelligence map"><rect width="1000" height="500"/><g id="markers"></g></svg>
+    </section>
+    <section id="events" class="view"><h1>Event stream</h1><div id="event-list" class="list"></div></section>
+    <section id="entities" class="view"><h1>Entity explorer</h1><div id="entity-list" class="list"></div></section>
+    <section id="timeline" class="view"><h1>Timeline</h1><input id="timeline-range" type="range" min="0" max="100" value="100"><output id="timeline-output">100%</output></section>
+    <section id="changes" class="view"><h1>Changes</h1><div id="change-list" class="list"></div></section>
+    <section id="signals" class="view"><h1>Signals</h1><div id="signal-list" class="list"></div></section>
+    <section id="evidence" class="view"><h1>Evidence inspector</h1><pre id="evidence-view"></pre></section>
+    <section id="provenance" class="view"><h1>Provenance</h1><pre id="provenance-view"></pre></section>
+  </main>
+  <aside id="inspector" class="inspector" aria-live="polite"><h2>Inspector</h2><p>Select an object to inspect its structured record.</p></aside>
+</div>
+<script src="app.js"></script>
+</body></html>
