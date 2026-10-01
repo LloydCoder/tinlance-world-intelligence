@@ -25,5 +25,6 @@
 - Phase 22 — Intelligence API & Developer Platform — complete
 - Phase 23 — Security, Privacy & Governance — complete
 - Phase 24 — Reliability & Distributed Systems — complete
+- Phase 25 — Observability & Operations — complete
 
-Next enterprise sequence: 25 Observability & Operations; 26 World Monitor Enterprise; 27 Enterprise Validation & Scale.
+Next enterprise sequence: 26 World Monitor Enterprise; 27 Enterprise Validation & Scale.
