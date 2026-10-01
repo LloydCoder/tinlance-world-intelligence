@@ -326,7 +326,7 @@ The objective is a **traceable, temporal, geospatial, evidence-backed representa
 
 ## Historical foundation (Phases 0–1)
 
-Phase 0 and Phase 1 are implemented in the current repository boundary:
+The initial repository boundary established the following foundation primitives:
 
 - versioned Python contracts for sources, acquisition, artifacts, and source health;
 - universal ontology enums for entities, events, relationships, and intelligence objects;
