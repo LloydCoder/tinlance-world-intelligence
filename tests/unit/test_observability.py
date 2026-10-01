@@ -1,5 +1,4 @@
 import unittest
-from services.observability.observability import placeholder if False else None
 from services.observability.slo import SLO
 from services.observability.telemetry import Counter,Histogram,Tracer
 
