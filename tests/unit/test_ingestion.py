@@ -44,6 +44,12 @@ class IngestionTests(unittest.TestCase):
         result = IngestionCoordinator(client, InMemoryArtifactLedger()).ingest(AcquisitionRequest("s1", "https://example.com"))
         self.assertEqual(result.status, "failed")
         self.assertEqual(result.attempts, 3)
+    def test_private_redirect_target_is_rejected(self):
+        now = datetime.now(timezone.utc)
+        response = AcquisitionResponse(200, "text/plain", b"hello", "e1", None, now, "http://127.0.0.1", {})
+        with self.assertRaises(Exception):
+            IngestionCoordinator(Client([response]), InMemoryArtifactLedger()).ingest(AcquisitionRequest("s1", "https://example.com"))
+
     def test_not_modified_does_not_create_artifact(self):
         now = datetime.now(timezone.utc)
         response = AcquisitionResponse(304, None, None, "e1", None, now, "https://example.com", {})
