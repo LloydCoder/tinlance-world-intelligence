@@ -13,6 +13,8 @@ class WorldMonitorTests(unittest.TestCase):
     def test_app_exists_and_avoids_untrusted_innerhtml(self):
         app=Path("apps/world-monitor/app.js").read_text()
         self.assertNotIn("innerHTML",app)
+        self.assertIn("demo=1",app)
+        self.assertIn("WORLD_INTELLIGENCE_CONFIG",app)
     def test_app_exists(self):
         self.assertTrue(Path("apps/world-monitor/app.js").exists())
 
