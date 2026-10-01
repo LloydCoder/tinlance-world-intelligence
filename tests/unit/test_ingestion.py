@@ -4,6 +4,7 @@ from packages.contracts import AcquisitionRequest, AcquisitionResponse
 from services.acquisition.interface import AcquisitionClient, AcquisitionError
 from services.artifact_ingestion.ledger import InMemoryArtifactLedger
 from services.ingestion.coordinator import IngestionCoordinator
+from services.acquisition.security import UnsafeFetchTarget
 from services.ingestion.queue import InMemoryIngestionQueue, IngestionJob, QueueFull
 from services.ingestion.retry import RetryPolicy
 
@@ -47,7 +48,7 @@ class IngestionTests(unittest.TestCase):
     def test_private_redirect_target_is_rejected(self):
         now = datetime.now(timezone.utc)
         response = AcquisitionResponse(200, "text/plain", b"hello", "e1", None, now, "http://127.0.0.1", {})
-        with self.assertRaises(Exception):
+        with self.assertRaises(UnsafeFetchTarget):
             IngestionCoordinator(Client([response]), InMemoryArtifactLedger()).ingest(AcquisitionRequest("s1", "https://example.com"))
 
     def test_not_modified_does_not_create_artifact(self):
