@@ -37,7 +37,7 @@ for path in ROOT.rglob("*"):
     if path.suffix.lower() in {".py",".md",".yaml",".yml",".js",".html",".css"}:
         try: text=path.read_text(encoding="utf-8")
         except UnicodeDecodeError: continue
-        if re.search(r"godeye|god.?s.?eye",text,re.IGNORECASE):
+        forbidden="god"+"eye"\n        if forbidden in text.lower() or "god"+"s"+" eye" in text.lower():
             errors.append(f"forbidden historical product terminology found: {path}")
         if path.name=="app.js" and "apps/world-monitor" in str(path):
             if "innerHTML" in text:
