@@ -24,7 +24,7 @@ for path in (ROOT/"db/migrations").glob("*.sql"):
     match=re.match(r"(\d{4})_",path.name)
     if match:
         migration_numbers.append(int(match.group(1)))
-if sorted(migration_numbers)!=list(range(1,21)):
+if sorted(migration_numbers)!=list(range(1,22)):
     errors.append(f"migration sequence mismatch: {sorted(migration_numbers)}")
 
 for path in ROOT.rglob("*"):
@@ -45,8 +45,8 @@ for path in ROOT.rglob("*"):
 ci=(ROOT/".github/workflows/ci.yml").read_text(encoding="utf-8")
 if "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" not in ci:
     errors.append("checkout action is not pinned to the approved immutable v7.0.1 commit")
-if "information_schema.tables" not in ci or '= "43"' not in ci:
-    errors.append("CI schema gate does not verify the expected 43-table schema")
+if "information_schema.tables" not in ci or '= "44"' not in ci:
+    errors.append("CI schema gate does not verify the expected 44-table schema")
 
 readme=(ROOT/"README.md").read_text(encoding="utf-8")
 if "Phase 0 and Phase 1 are implemented" in readme or "Phases 0–15 are now implemented" in readme or "Early foundation / active development" in readme:

@@ -5,6 +5,7 @@ from packages.contracts import AcquisitionRequest, AcquisitionResponse, RawArtif
 from services.acquisition.interface import AcquisitionClient, AcquisitionError
 from services.artifact_ingestion.ledger import InMemoryArtifactLedger, build_candidate
 from services.ingestion.retry import RetryPolicy
+from services.acquisition.security import validate_fetch_uri
 
 @dataclass(frozen=True, slots=True)
 class IngestionResult:
@@ -24,7 +25,9 @@ class IngestionCoordinator:
         while True:
             attempts += 1
             try:
+                validate_fetch_uri(request.uri)
                 response: AcquisitionResponse = self.client.fetch(request)
+                validate_fetch_uri(response.final_uri)
                 if response.status_code == 304 or response.body is None:
                     return IngestionResult("not_modified", None, attempts)
                 if response.status_code < 200 or response.status_code >= 300:
