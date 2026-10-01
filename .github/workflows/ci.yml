@@ -69,7 +69,8 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0016_fusion.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0017_developer_api.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0018_security_governance.sql
-          psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0019_reliability.sql\n          psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0020_observability.sql
+          psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0019_reliability.sql
+          psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0020_observability.sql
       - name: Verify schema
         env:
           PGPASSWORD: postgres
