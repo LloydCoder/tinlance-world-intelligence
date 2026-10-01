@@ -6,8 +6,8 @@ This document records the final planned Phase 0–27 engineering gate.
 
 - GitHub Actions workflow is pinned to immutable action commits.
 - Python compilation and unit/contract/security tests run in CI.
-- PostgreSQL/PostGIS migrations are applied from 0001 through 0020.
-- CI verifies 43 application schema tables after the migration set.
+- PostgreSQL/PostGIS migrations are applied from 0001 through 0021.
+- CI verifies 44 application schema tables after the migration set.
 - Enterprise repository audit checks phase-index completeness, migration continuity, required governance files, forbidden terminology, browser-security invariants, stale documentation, and CI pinning.
 - World Monitor defaults to no synthetic intelligence; demo data requires explicit `?demo=1`.
 - Security controls include fail-closed tenant authorization, SSRF-aware target validation hooks, secret redaction, append-only audit events, idempotency, leases, circuit breaking, and operational telemetry.
