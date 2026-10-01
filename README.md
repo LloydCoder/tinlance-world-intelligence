@@ -2,7 +2,7 @@
 
 **A provenance-first temporal intelligence fabric for modeling, correlating, and monitoring real-world entities, events, relationships, and change.**
 
-> **Status:** Early foundation / active development  
+> **Status:** Phase 0–27 enterprise roadmap implemented; final validation and operational deployment remain evidence-driven activities  
 > **Repository:** `LloydCoder/tinlance-world-intelligence`
 
 ## Overview
@@ -324,9 +324,9 @@ The repository is under active development. Architecture will evolve through imp
 The objective is a **traceable, temporal, geospatial, evidence-backed representation of changing real-world state** that can safely serve humans, applications, analytical systems, and governed agents.
 
 
-## Implemented foundation
+## Historical foundation (Phases 0–1)
 
-Phase 0 and Phase 1 are implemented in the current repository boundary:
+The initial repository boundary established the following foundation primitives:
 
 - versioned Python contracts for sources, acquisition, artifacts, and source health;
 - universal ontology enums for entities, events, relationships, and intelligence objects;
@@ -357,38 +357,35 @@ See:
 - db/README.md
 
 
-## Implemented intelligence fabric
+## Implemented enterprise sequence
 
-Phases 0–15 are now implemented as a serial, CI-gated progression:
+Phases 0–27 are implemented as a serial, CI-gated progression:
 
-1. Foundation — contracts, ontology, CI, database, security.
-2. Source & Artifact — registry, acquisition boundary, immutable SHA-256 artifact ledger, deduplication, source health.
-3. Observation — extraction contracts, normalization, validation, provenance.
-4. Entity Intelligence — identifiers, aliases, conservative resolution, merge/split history, confidence.
-5. Event Intelligence — event ontology, extraction boundary, temporal correlation, lifecycle, provenance.
-6. Temporal World State — valid time, observation time, knowledge-as-of, snapshots.
-7. Geospatial Intelligence — PostGIS geometry, GiST indexes, geofences, spatial-temporal query contracts.
-8. Relationship Intelligence — temporal relationships, bounded traversal, relationship changes.
-9. Change Engine — before/after comparison, classification, significance, source-vs-world-change distinction.
-10. Correlation & Contradiction — source dependency, contradiction records, corroboration.
-11. Signal Engine — versioned rules, deterministic evaluation, explanations, evaluation metrics.
-12. Intelligence API — typed query service, HTTP routing contract, OpenAPI surface.
-13. World Monitor — first-party map and investigation views for events, entities, timeline, changes, signals, evidence and provenance.
-14. Replay & Backtesting — manifest-driven replay, deterministic backtests, regression fixtures.
-15. Advanced Intelligence — source-independence graph, anomaly candidates, intelligence cards and explanation lineage.
-16. Tinlance Ecosystem — ReconOS, TADS, Agent OS, Agent Platform, external API and SDK capability boundaries.
-
-### Final semantic boundary
-
-`SOURCE → RAW ARTIFACT → OBSERVATION → ENTITY / EVENT / RELATIONSHIP → TEMPORAL WORLD STATE → CHANGE → CORRELATION / CONTRADICTION → SIGNAL → INTELLIGENCE → API / WORLD MONITOR / GOVERNED CONSUMERS`
-
-World Intelligence remains the information/evidence substrate. It does not become an
-authorization or execution authority. Agent Platform remains the governance boundary.
-
-### Standards alignment
-
-The architecture is informed by W3C PROV for provenance, OWL-Time for temporal concepts,
-OGC API Features/Moving Features for geospatial interoperability, PostGIS for spatial
-persistence/querying, JSON Schema 2020-12 for contracts, and OpenTelemetry semantic
-conventions for observability. These standards guide interoperability without coupling
-the canonical model to a particular vendor implementation.
+0. Foundation — contracts, ontology, CI, database, security.
+1. Source & Artifact — source registry, acquisition boundary, immutable SHA-256 artifact ledger, deduplication, source health.
+2. Observation — extraction contracts, normalization, validation, provenance.
+3. Entity Intelligence — identifiers, aliases, conservative resolution, merge/split history.
+4. Event Intelligence — event ontology, lifecycle, temporal correlation, provenance.
+5. Temporal World State — valid time, observation time, knowledge-as-of, snapshots.
+6. Geospatial Intelligence — PostGIS geometry, indexes, geofences, spatial-temporal contracts.
+7. Relationship Intelligence — temporal relationships and bounded traversal.
+8. Change Engine — before/after state, significance, source-vs-world-change distinction.
+9. Correlation & Contradiction — source dependence, contradiction records, corroboration.
+10. Signal Engine — versioned deterministic rules and explanations.
+11. Intelligence API — query/routing/OpenAPI contracts.
+12. World Monitor — first-party visual investigation surface.
+13. Replay & Backtesting — deterministic replay and regression metrics.
+14. Advanced Intelligence — independence graph, anomaly candidates, intelligence cards.
+15. Tinlance Ecosystem — bounded ReconOS/TADS/Agent OS/Agent Platform contracts.
+16. Production Runtime — runnable HTTP service, health/readiness, authentication, request IDs.
+17. Acquisition & Ingestion — bounded queues, retries, conditional retrieval, artifact handoff.
+18. Evidence & Data Quality — evidence objects, fingerprints, deterministic quality validation.
+19. Entity & Knowledge Graph — bounded traversal and conservative resolution governance.
+20. Temporal & Geospatial Runtime — executable time/knowledge/spatial query semantics.
+21. Fusion & Advanced Signals — contradiction-aware fusion and expanded signal DSL.
+22. Intelligence API & Developer Platform — signed cursors, subscriptions, expanded read-only SDK.
+23. Security, Privacy & Governance — SSRF-aware target policy, authorization, redaction, audit.
+24. Reliability & Distributed Systems — idempotency, leases, circuit breakers, durable job schema.
+25. Observability & Operations — telemetry vocabulary, SLOs, error budgets, operational events.
+26. World Monitor Enterprise — investigation UX, safe DOM rendering, browser security policy.
+27. Enterprise Validation & Scale — final repository validation gate and standards-aligned audit.
