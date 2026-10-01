@@ -13,11 +13,11 @@ class IntelligenceRouter:
         self.service=service
         self.routes=tuple(Route("GET",f"/v1/{r}",r) for r in ("entities","events","world-state","changes","signals","evidence","provenance"))
 
-    def dispatch(self,path:str):
+    def dispatch(self,path:str,legacy_limit:int|None=None):
         parsed=urlparse(path)
         query=parse_qs(parsed.query,keep_blank_values=False)
         try:
-            limit=int(query.get("limit",["100"])[0])
+            limit=int(query.get("limit",[str(legacy_limit if legacy_limit is not None else 100)])[0])
             cursor=int(query.get("cursor",["0"])[0])
         except ValueError as exc:
             raise ValueError("cursor and limit must be integers") from exc
