@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/LloydCoder/tinlance-world-intelligence/security/advisories/new
+    about: Report a vulnerability privately. If private reporting is unavailable, follow SECURITY.md.
+  - name: Documentation
+    url: https://github.com/LloydCoder/tinlance-world-intelligence/tree/main/docs
+    about: Read the project documentation before opening a usage question.
