@@ -1,0 +1,41 @@
+# Tinlance World Intelligence
+
+> Provenance-first temporal intelligence fabric for modeling, correlating, and monitoring real-world entities, events, relationships, change, signals, and source provenance. The repository is Python-based, Apache-2.0 licensed, and exposes a bounded read/query runtime plus a first-party World Monitor application surface.
+
+## Project
+
+- [README](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/README.md): Product boundary, quick start, runtime configuration, architecture, and semantic model.
+- [pyproject.toml](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/pyproject.toml): Python project metadata and optional PostgreSQL runtime dependency.
+- [CHANGELOG](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/CHANGELOG.md): Release and change history.
+
+## Tutorials
+
+- [Documentation index](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/README.md): Entry point to project documentation.
+- [Quickstart tutorial](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/tutorials/quickstart.md): Run the repository verification gate and bounded runtime locally.
+
+## How-to
+
+- [Run the runtime](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/how-to/run-runtime.md): Configure and start the HTTP runtime in memory or PostgreSQL mode.
+- [Validate migrations](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/how-to/validate-database.md): Apply and verify the PostgreSQL/PostGIS migration sequence.
+- [Add a source](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/how-to/add-a-source.md): Extend source registration while preserving provenance and security boundaries.
+
+## Explanation
+
+- [Architecture](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/explanation/architecture.md): Why the fabric separates source, artifact, observation, world state, change, signal, and intelligence.
+- [Boundaries](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/architecture/boundaries.md): Responsibility boundaries with ReconOS, TADS, Agent OS, and Agent Platform.
+- [Security model](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/explanation/security-model.md): Trust boundaries and untrusted-content handling.
+- [Temporal model](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/explanation/temporal-model.md): Event time, valid time, observation time, ingestion time, and knowledge-as-of semantics.
+
+## Reference
+
+- [Runtime configuration](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/reference/runtime-config.md): Environment variables, defaults, validation, and production requirements.
+- [Intelligence API](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/docs/api/intelligence-api.md): Query surface and contract boundary.
+- [OpenAPI](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/schemas/api/openapi.yaml): Machine-readable API contract.
+- [Database README](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/db/README.md): Database layout and migration context.
+- [Security policy](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/SECURITY.md): Vulnerability reporting and security principles.
+
+## Optional
+
+- [Contributing](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/CONTRIBUTING.md): Contribution and review workflow.
+- [Support](https://github.com/LloydCoder/tinlance-world-intelligence/blob/main/SUPPORT.md): Usage and issue-routing guidance.
+- [Architecture phases](https://github.com/LloydCoder/tinlance-world-intelligence/tree/main/docs/architecture): Detailed phase-by-phase design records.
