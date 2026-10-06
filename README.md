@@ -1,391 +1,263 @@
 # Tinlance World Intelligence
 
-**A provenance-first temporal intelligence fabric for modeling, correlating, and monitoring real-world entities, events, relationships, and change.**
+> Provenance-first temporal intelligence infrastructure for engineering teams that need traceable entities, events, world state, change, signals, and intelligence.
 
-> **Status:** Phase 0–27 enterprise roadmap implemented; final validation and operational deployment remain evidence-driven activities  
-> **Repository:** `LloydCoder/tinlance-world-intelligence`
+[![CI](https://github.com/LloydCoder/tinlance-world-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/LloydCoder/tinlance-world-intelligence/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/LloydCoder/tinlance-world-intelligence)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-%3E%3D3.12-blue)](pyproject.toml)
+[![Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 
-## Overview
+## Visual proof
 
-Tinlance World Intelligence is the intelligence fabric underlying Tinlance's world-awareness systems. It transforms heterogeneous external information into a structured, traceable, temporal representation of the world.
+The repository currently ships a first-party World Monitor surface, but no public deployment or committed screenshot/GIF is claimed as a live demo. The architecture below is rendered directly by GitHub and shows the executable semantic boundary:
 
-```text
-SOURCE → ACQUISITION → RAW ARTIFACT → OBSERVATION
-→ ENTITY / EVENT / RELATIONSHIP → TEMPORAL WORLD STATE
-→ CHANGE → CORRELATION / CONTRADICTION / COVERAGE
-→ SIGNAL → INTELLIGENCE
+```mermaid
+flowchart LR
+  S[External Sources] --> A[Acquisition]
+  A --> R[Raw Artifact Ledger]
+  R --> O[Observations]
+  O --> E[Entity / Event / Relationship]
+  E --> W[Temporal World State]
+  W --> C[Change]
+  C --> G[Correlation / Contradiction / Coverage]
+  G --> Q[Signals]
+  Q --> I[Intelligence API]
+  I --> M[World Monitor]
+  I --> T[TADS]
+  I --> OS[Agent OS]
+  OS --> AP[Agent Platform]
 ```
 
-The first application built on the fabric is **Tinlance World Monitor**, a visual interface for exploring entities, events, changes, signals, evidence, and source provenance.
+> [!NOTE]
+> A real screenshot or short demo GIF should be added when a maintained deployment is available. The project does not use a fabricated “live demo” claim.
 
-**World Monitor is a consumer of the intelligence fabric—not the definition of it.**
+## Why this project
 
-## Goals
+World Intelligence separates **what was observed** from **what was inferred** and preserves the path back to source material. That makes it suitable as a shared intelligence layer rather than a dashboard-specific data store.
 
-- Real-world entity, event, and relationship modeling
-- Temporal world-state reconstruction
-- Geospatial intelligence
-- Evidence and provenance traceability
-- Cross-source correlation and contradiction detection
-- Change detection and explainable signals
-- Source health, freshness, and coverage awareness
-- Deterministic replay and historical analysis
-- Machine-readable intelligence APIs
-- Safe integration with TADS, Agent OS, and other Tinlance systems
+| Problem | World Intelligence approach |
+| --- | --- |
+| Mutable “current state” loses history | Temporal state with observation, valid, event, and ingestion times |
+| AI output becomes indistinguishable from evidence | Explicit observation, evidence, finding, signal, and intelligence boundaries |
+| Conflicting sources disappear during normalization | Contradictions and source dependence remain representable |
+| Source outages look like negative facts | Source health and coverage are first-class metadata |
+| External content can contain hostile instructions | Acquisition and parsing are treated as untrusted-data boundaries |
+| Consumers need different interfaces | Read/query APIs and bounded integration contracts |
+| Reprocessing changes historical results | Immutable artifacts, hashes, provenance, and deterministic replay |
 
-## Core semantic model
+The first application built on the fabric is **Tinlance World Monitor**. World Monitor consumes the fabric; it does not define its semantics.
 
-```text
-Source → Raw Artifact → Observation
-                         ├→ Entity
-                         ├→ Event
-                         └→ Relationship
-                                  ↓
-                           Temporal World State
-                                  ↓
-                                Change
-                                  ↓
-                                Signal
-                                  ↓
-                             Intelligence
-```
+## Quick Start
 
-These concepts are deliberately distinct:
-
-- **Observation ≠ Evidence**
-- **Evidence ≠ Finding**
-- **Finding ≠ Intelligence**
-- **Intelligence ≠ Authority**
-- **Freshness ≠ Truth**
-- **Absence ≠ Negative Evidence**
-- **Correlation ≠ Causation**
-- **Multiple Sources ≠ Independent Corroboration**
-- **AI Output ≠ Ground Truth**
-
-## Architecture
-
-```text
-SOURCE REGISTRY
-      ↓
-ACQUISITION / CONNECTORS
-      ↓
-RAW ARTIFACT LEDGER ─────────→ PROVENANCE
-      ↓
-NORMALIZATION
-      ↓
-OBSERVATIONS
-      ├───────────────┬────────────────┐
-      ↓               ↓                ↓
-ENTITY RESOLUTION  EVENT EXTRACTION  RELATIONSHIP RESOLUTION
-      └───────────────┴────────────────┘
-                      ↓
-              TEMPORAL WORLD MODEL
-                      │
-          ┌───────────┼────────────┐
-          ↓           ↓            ↓
-      CORRELATION  CONTRADICTION  COVERAGE
-          └───────────┼────────────┘
-                      ↓
-                 CHANGE ENGINE
-                      ↓
-                 SIGNAL ENGINE
-                      ↓
-              INTELLIGENCE API
-                 │      │      │
-                 ↓      ↓      ↓
-          World Monitor TADS  Agent OS
-                                ↓
-                         Agent Platform
-```
-
-## Data flow
-
-```text
-External Source
- ↓ Source Registry
- ↓ Acquisition Connector
- ↓ Raw Artifact + Content Hash
- ↓ Normalization / Deduplication
- ↓ Observation Extraction
- ↓ Validation
- ↓ Entity / Event / Relationship Resolution
- ↓ Temporal World State
- ↓ Change Detection
- ↓ Signal Evaluation
- ↓ Intelligence API
- ↓ Consumers
-```
-
-Intermediate representations are preserved rather than collapsing the pipeline into an opaque AI transformation.
-
-## Temporal intelligence
-
-World Intelligence is designed around temporal state, not only mutable current-state records.
-
-Important timestamps include:
-
-- `event_time`
-- `valid_time`
-- `observed_at`
-- `ingested_at`
-- future: `knowledge_as_of`
-
-This supports current-state, historical-state, and knowledge-as-of queries.
-
-## Provenance
-
-Important intelligence objects should be traceable toward their source material:
-
-```text
-INTELLIGENCE
- ↓ SIGNAL
- ↓ CHANGE
- ↓ WORLD-STATE ASSERTION
- ↓ OBSERVATION
- ↓ RAW ARTIFACT
- ↓ SOURCE
-```
-
-Provenance records should include source attribution, artifact identity, content hashes, transformation lineage, extractor/model versions, rule versions, and evidence references.
-
-AI-generated output is never evidence merely because an AI system produced it.
-
-## Source, freshness, and coverage
-
-The platform explicitly distinguishes:
-
-```text
-No observation ≠ Negative assertion
-No observation ≠ No event
-No observation ≠ Source failure
-No observation ≠ Source outage
-No observation ≠ Parser failure
-No observation ≠ Stale data
-```
-
-Source health and coverage are first-class intelligence metadata.
-
-## Change and signals
-
-Changes are first-class objects with before/after state, effective and detection times, significance, confidence, supporting evidence, contradictions, and provenance.
-
-Signals operate downstream of structured world state. They should be versioned, explainable, reproducible, testable, and backtestable.
-
-## AI boundary
-
-External content is untrusted data.
-
-```text
-UNTRUSTED CONTENT
- ↓ ACQUISITION ISOLATION
- ↓ RAW ARTIFACT
- ↓ PARSER / EXTRACTOR
- ↓ CANDIDATE OBSERVATION
- ↓ VALIDATION
- ↓ RESOLUTION
- ↓ WORLD STATE
-```
-
-AI may assist extraction, classification, correlation, and synthesis. It does not become the authoritative source of world state.
-
-## Repository structure
-
-```text
-tinlance-world-intelligence/
-├── apps/world-monitor/
-├── packages/
-│   ├── contracts/
-│   ├── ontology/
-│   ├── provenance/
-│   ├── temporal/
-│   ├── geospatial/
-│   ├── entity-resolution/
-│   ├── event-intelligence/
-│   ├── relationship-intelligence/
-│   ├── change-engine/
-│   ├── signal-engine/
-│   ├── coverage/
-│   └── intelligence/
-├── services/
-│   ├── acquisition/
-│   ├── artifact-ingestion/
-│   ├── observation-pipeline/
-│   ├── entity-pipeline/
-│   ├── event-pipeline/
-│   ├── relationship-pipeline/
-│   ├── change-pipeline/
-│   ├── signal-pipeline/
-│   └── replay/
-├── api/
-├── integrations/
-├── db/
-│   ├── migrations/
-│   ├── seeds/
-│   ├── functions/
-│   └── views/
-├── schemas/
-├── tests/
-│   ├── unit/
-│   ├── integration/
-│   ├── contract/
-│   ├── end-to-end/
-│   ├── adversarial/
-│   ├── data-quality/
-│   └── golden/
-├── docs/
-├── config/
-├── scripts/
-└── .github/workflows/
-```
-
-## Development setup
-
-Prerequisites: Git, GitHub CLI, Python 3.12+, Node.js 24+, PostgreSQL + PostGIS, and Docker.
+For the repository gate, no database or third-party Python package is required.
 
 ```bash
 git clone https://github.com/LloydCoder/tinlance-world-intelligence.git
 cd tinlance-world-intelligence
+python -m unittest discover -s tests -v
 ```
 
-Never commit credentials. Local configuration belongs in `.env`, based on `.env.example` when present.
+The same checks are available through:
 
-The initial repository gate is:
+```bash
+make check
+make test
+```
+
+> [!TIP]
+> Use Python 3.12 or newer. The CI gate currently validates Python 3.12.
+
+## Installation
+
+### Prerequisites
+
+- Git
+- Python 3.12+
+- PostgreSQL 16 + PostGIS 3.5 when using persistent storage
+- Optional: GitHub CLI for repository workflows
+
+The project is currently operated from the source tree. The `pyproject.toml` also declares the optional PostgreSQL runtime dependency.
+
+### Optional PostgreSQL runtime dependency
+
+```bash
+python -m pip install "tinlance-world-intelligence[runtime]"
+```
+
+Equivalent direct dependency:
+
+```bash
+python -m pip install "psycopg[binary,pool]==3.3.6"
+```
+
+### Database validation
+
+CI uses a PostGIS 16/3.5 service and applies migrations `0001` through `0021`. See [db/README.md](db/README.md) and [phase verification](docs/operations/phase-0-1-verification.md).
+
+## Usage
+
+### Run the bounded HTTP runtime
+
+The runtime reads configuration from environment variables.
+
+```bash
+export WORLD_INTELLIGENCE_ENV=development
+export WORLD_INTELLIGENCE_STORAGE_MODE=memory
+export WORLD_INTELLIGENCE_REQUIRE_AUTH=true
+export WORLD_INTELLIGENCE_BEARER_TOKEN=local-development-token
+python -c "from runtime.server import serve; serve()"
+```
+
+Then, from another terminal:
+
+```bash
+curl http://127.0.0.1:8080/healthz
+curl -H "Authorization: Bearer local-development-token" \
+  "http://127.0.0.1:8080/v1/entities?limit=10&cursor=0"
+```
+
+Health and readiness endpoints are public; intelligence endpoints require authentication when `WORLD_INTELLIGENCE_REQUIRE_AUTH=true`.
+
+### PostgreSQL-backed runtime
+
+Production and staging configuration requires PostgreSQL persistence and authentication:
+
+```bash
+export WORLD_INTELLIGENCE_ENV=production
+export WORLD_INTELLIGENCE_STORAGE_MODE=postgres
+export WORLD_INTELLIGENCE_REQUIRE_AUTH=true
+export WORLD_INTELLIGENCE_BEARER_TOKEN="$WORLD_INTELLIGENCE_BEARER_TOKEN"
+export DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/world_intelligence"
+python -c "from runtime.server import serve; serve()"
+```
+
+> [!WARNING]
+> Do not put production credentials in shell history, source files, issues, logs, fixtures, or committed `.env` files. Use the deployment platform's secret store.
+
+## Configuration
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `WORLD_INTELLIGENCE_ENV` | `development` | Runtime environment; production/staging enforce persistence requirements |
+| `WORLD_INTELLIGENCE_HOST` | `127.0.0.1` | HTTP bind address |
+| `WORLD_INTELLIGENCE_PORT` | `8080` | HTTP port |
+| `WORLD_INTELLIGENCE_STORAGE_MODE` | `memory` | `memory` or `postgres` |
+| `DATABASE_URL` | unset | PostgreSQL connection string when persistent storage is enabled |
+| `WORLD_INTELLIGENCE_REQUIRE_AUTH` | `true` | Require bearer authentication for intelligence endpoints |
+| `WORLD_INTELLIGENCE_BEARER_TOKEN` | unset | Bearer token used by the bounded runtime |
+| `WORLD_INTELLIGENCE_RATE_LIMIT_PER_MINUTE` | `120` | Fixed-window request limit |
+| `WORLD_INTELLIGENCE_MAX_BODY_BYTES` | `1048576` | Maximum accepted request body size |
+
+See [.env.example](.env.example) for the development configuration surface.
+
+## Features
+
+| Capability | Status | Primary location |
+| --- | --- | --- |
+| Source registry and source health | Implemented | `services/source_registry/` |
+| Immutable artifact identity and deduplication | Implemented | `services/artifact_ingestion/`, `packages/provenance/` |
+| Observation contracts and validation | Implemented | `packages/contracts/`, `services/observation_pipeline/` |
+| Entity, event, and relationship intelligence | Implemented | `services/entity_pipeline/`, `services/event_pipeline/`, `services/relationship_pipeline/` |
+| Temporal and geospatial queries | Implemented | `services/temporal/`, `services/temporal_geospatial/` |
+| Change, contradiction, correlation, and signals | Implemented | `services/change_engine/`, `services/correlation/`, `services/signal_engine/` |
+| Replay and backtesting | Implemented | `services/replay/` |
+| Read/query API | Implemented | `api/`, `schemas/api/openapi.yaml` |
+| Bounded HTTP runtime | Implemented | `runtime/` |
+| World Monitor application surface | Implemented | `apps/world-monitor/` |
+| Security, governance, reliability, and observability contracts | Implemented | `services/security/`, `services/reliability/`, `services/observability/` |
+
+“Implemented” describes repository functionality covered by the current code and CI gates; it does not imply a public production deployment or a guarantee of operational performance.
+
+## Documentation
+
+The documentation is organized around the Diátaxis model:
+
+- **Tutorials:** [docs/tutorials/](docs/tutorials/)
+- **How-to guides:** [docs/how-to/](docs/how-to/)
+- **Explanation:** [docs/explanation/](docs/explanation/)
+- **Reference:** [docs/reference/](docs/reference/)
+- **Architecture phases:** [docs/architecture/](docs/architecture/)
+- **API contract:** [schemas/api/openapi.yaml](schemas/api/openapi.yaml)
+- **Database:** [db/README.md](db/README.md)
+- **Security boundary:** [docs/security/acquisition-boundary.md](docs/security/acquisition-boundary.md)
+- **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Security policy:** [SECURITY.md](SECURITY.md)
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+
+## Semantic boundaries
+
+The project deliberately preserves these distinctions:
+
+- Observation ≠ Evidence
+- Evidence ≠ Finding
+- Finding ≠ Intelligence
+- Intelligence ≠ Authority
+- Freshness ≠ Truth
+- Absence ≠ Negative Evidence
+- Correlation ≠ Causation
+- Multiple Sources ≠ Independent Corroboration
+- AI Output ≠ Ground Truth
+
+External content is untrusted data. AI may assist extraction, classification, correlation, and synthesis, but it does not become the authoritative source of world state.
+
+## Ecosystem boundaries
+
+| System | Responsibility |
+| --- | --- |
+| World Intelligence | World-state semantics, provenance, temporal modeling, entities/events/relationships, changes, signals, intelligence APIs |
+| ReconOS | Governed acquisition and reconnaissance capabilities |
+| TADS | Target and demand intelligence |
+| Agent OS | Controlled intelligence consumption and agent workspace/lifecycle |
+| Agent Platform | Policy, authorization, approvals, execution, runtime governance |
+
+World Intelligence provides information; it does not become execution authority.
+
+## Contributing
+
+Start with [CONTRIBUTING.md](CONTRIBUTING.md). Changes should preserve provenance, temporal semantics, explicit uncertainty, security boundaries, and versioned contracts.
+
+## License and acknowledgements
+
+Licensed under the [Apache License 2.0](LICENSE).
+
+Tinlance World Intelligence is maintained by Tinlance Limited. The architecture is intentionally compatible with the broader Tinlance ecosystem while keeping execution authority outside this repository.
+
+## Status
+
+The repository has completed its documented Phase 0–27 implementation sequence and has a CI-backed enterprise validation gate. Operational deployment, external-source coverage, and production workload validation remain evidence-driven activities.
+
+> [!NOTE]
+> The repository is young and currently has no published releases. Treat `main` as the development baseline until a signed release process is established.
+
+<details>
+<summary>Troubleshooting</summary>
+
+### Tests fail locally
+
+Confirm Python 3.12+:
+
+```bash
+python --version
+```
+
+Then run the same commands used by CI:
 
 ```bash
 python -m compileall packages services api tests
 python -m unittest discover -s tests -v
+python scripts/enterprise_audit.py
+python scripts/security_baseline.py
 ```
 
-## Implementation principles
+### PostgreSQL checks fail
 
-1. **Evidence before intelligence.**
-2. **Provenance is first-class.**
-3. **Temporal state over destructive mutation.**
-4. **Unknown is valid.**
-5. **Absence is not automatically negative evidence.**
-6. **AI is not authority.**
-7. **External content is untrusted.**
-8. **Contradictions are preserved.**
-9. **Source independence matters.**
-10. **Freshness matters.**
-11. **Coverage matters.**
-12. **Replay matters.**
-13. **Contracts before coupling.**
-14. **Security boundaries are architectural boundaries.**
-15. **Prefer simple infrastructure until measured workload requires more.**
-16. **Build vertical slices.**
+Use PostgreSQL 16 with PostGIS 3.5 and apply migrations in numeric order. CI is the canonical database validation environment.
 
-## Integration boundaries
+</details>
 
-- **ReconOS:** acquisition/recon capabilities and stable ingestion contracts.
-- **TADS:** consumes world intelligence for target, account, and demand intelligence.
-- **Agent OS:** consumes controlled intelligence capabilities.
-- **Agent Platform:** owns policy, authorization, approvals, execution, and runtime governance.
+<details>
+<summary>Support</summary>
 
-World Intelligence provides information; it does not become execution authority.
+See [SUPPORT.md](SUPPORT.md) for questions, documentation requests, and issue-routing guidance. Security vulnerabilities belong in [SECURITY.md](SECURITY.md), not public issues.
 
-## Non-goals
-
-This repository is not a generic chatbot, CRM, autonomous decision authority, unrestricted surveillance system, replacement for ReconOS/TADS/Agent Platform, AI truth engine, or dashboard-centric architecture.
-
-## Development strategy
-
-Implementation proceeds through vertical slices:
-
-```text
-Source → Artifact → Observation → World State → Change
-→ API → World Monitor → Tests
-```
-
-Each completed slice should be observable, testable, documented, provenance-aware, secure, and reproducible.
-
-## Security
-
-Security concerns include untrusted-source isolation, SSRF, prompt injection, malicious documents and feeds, secret handling, authorization, provenance integrity, dependency/supply-chain security, API abuse, auditability, privacy, and retention.
-
-See [SECURITY.md](SECURITY.md).
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-Apache-2.0. See [LICENSE](LICENSE).
-
-## CI verification
-
-The repository foundation is continuously checked by GitHub Actions.
-
-## Status
-
-The repository is under active development. Architecture will evolve through implementation evidence, adversarial testing, operational measurements, and real workload requirements.
-
-The objective is a **traceable, temporal, geospatial, evidence-backed representation of changing real-world state** that can safely serve humans, applications, analytical systems, and governed agents.
-
-
-## Historical foundation (Phases 0–1)
-
-The initial repository boundary established the following foundation primitives:
-
-- versioned Python contracts for sources, acquisition, artifacts, and source health;
-- universal ontology enums for entities, events, relationships, and intelligence objects;
-- SHA-256 content identity and a reference artifact ledger with deduplication semantics;
-- source registry with canonical-URI uniqueness;
-- source-health state tracking with explicit degradation/unavailability transitions;
-- acquisition interface plus deterministic URL preflight security checks;
-- PostgreSQL + PostGIS schema for source registry, artifact ledger, retrieval references,
-  source health, and schema metadata;
-- JSON Schemas for source and raw-artifact contracts;
-- repository security baseline and database-backed CI verification;
-- CI action references pinned to immutable commit SHAs.
-
-### Phase 0-1 invariants
-
-The raw artifact is the exact acquired byte sequence. Hashing occurs before parsing or
-normalization. Deduplication is global by content hash, while every source retrieval is
-retained separately for provenance. A not-modified retrieval does not create a new artifact.
-
-The acquisition security helper is a preflight layer, not the complete SSRF boundary.
-Concrete network adapters must perform connection-time DNS/IP validation, redirect
-revalidation, credential isolation, resource limits, and parser isolation.
-
-See:
-- docs/architecture/phase-0-1.md
-- docs/operations/phase-0-1-verification.md
-- docs/security/acquisition-boundary.md
-- db/README.md
-
-
-## Implemented enterprise sequence
-
-Phases 0–27 are implemented as a serial, CI-gated progression:
-
-0. Foundation — contracts, ontology, CI, database, security.
-1. Source & Artifact — source registry, acquisition boundary, immutable SHA-256 artifact ledger, deduplication, source health.
-2. Observation — extraction contracts, normalization, validation, provenance.
-3. Entity Intelligence — identifiers, aliases, conservative resolution, merge/split history.
-4. Event Intelligence — event ontology, lifecycle, temporal correlation, provenance.
-5. Temporal World State — valid time, observation time, knowledge-as-of, snapshots.
-6. Geospatial Intelligence — PostGIS geometry, indexes, geofences, spatial-temporal contracts.
-7. Relationship Intelligence — temporal relationships and bounded traversal.
-8. Change Engine — before/after state, significance, source-vs-world-change distinction.
-9. Correlation & Contradiction — source dependence, contradiction records, corroboration.
-10. Signal Engine — versioned deterministic rules and explanations.
-11. Intelligence API — query/routing/OpenAPI contracts.
-12. World Monitor — first-party visual investigation surface.
-13. Replay & Backtesting — deterministic replay and regression metrics.
-14. Advanced Intelligence — independence graph, anomaly candidates, intelligence cards.
-15. Tinlance Ecosystem — bounded ReconOS/TADS/Agent OS/Agent Platform contracts.
-16. Production Runtime — runnable HTTP service, health/readiness, authentication, request IDs.
-17. Acquisition & Ingestion — bounded queues, retries, conditional retrieval, artifact handoff.
-18. Evidence & Data Quality — evidence objects, fingerprints, deterministic quality validation.
-19. Entity & Knowledge Graph — bounded traversal and conservative resolution governance.
-20. Temporal & Geospatial Runtime — executable time/knowledge/spatial query semantics.
-21. Fusion & Advanced Signals — contradiction-aware fusion and expanded signal DSL.
-22. Intelligence API & Developer Platform — signed cursors, subscriptions, expanded read-only SDK.
-23. Security, Privacy & Governance — SSRF-aware target policy, authorization, redaction, audit.
-24. Reliability & Distributed Systems — idempotency, leases, circuit breakers, durable job schema.
-25. Observability & Operations — telemetry vocabulary, SLOs, error budgets, operational events.
-26. World Monitor Enterprise — investigation UX, safe DOM rendering, browser security policy.
-27. Enterprise Validation & Scale — final repository validation gate and standards-aligned audit.
+</details>
