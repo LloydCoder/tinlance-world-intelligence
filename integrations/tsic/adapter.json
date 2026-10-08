@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "adapter_id": "tsic-world-intelligence-reference",
+  "source_system": "tsic",
+  "target_system": "world-intelligence",
+  "status": "reference-contract",
+  "authority": {
+    "integration_contracts": "tsic",
+    "world_state_semantics": "world-intelligence",
+    "provenance": "world-intelligence",
+    "execution_authority": "agent-platform"
+  },
+  "contract_bindings": [
+    {"tsic_contract": "identity-context", "world_intelligence_surface": "authenticated consumer context", "direction": "inbound"},
+    {"tsic_contract": "event-envelope", "world_intelligence_surface": "observation/event/change/signal envelopes", "direction": "outbound"},
+    {"tsic_contract": "delivery-semantics", "world_intelligence_surface": "replay/idempotent ingestion", "direction": "both"},
+    {"tsic_contract": "trace-context", "world_intelligence_surface": "runtime request correlation", "direction": "both"},
+    {"tsic_contract": "economic-attribution", "world_intelligence_surface": "signal/opportunity attribution metadata", "direction": "outbound"}
+  ],
+  "invariants": [
+    "external_content_is_untrusted_data",
+    "observation_is_not_evidence",
+    "evidence_is_not_intelligence",
+    "intelligence_is_not_authority",
+    "historical_artifacts_are_immutable",
+    "provenance_is_preserved",
+    "tsic_remains_integration_authority",
+    "agent-platform_remains_execution_authority"
+  ]
+}
