@@ -24,7 +24,7 @@ def fetch_json(path: str) -> dict:
 
 def main() -> None:
     manifest = fetch_json("manifests/ecosystem.json")
-    adapter = fetch_json("integrations/tsic/adapter.json")
+    adapter = fetch_json("integrations/world-intelligence/adapter.json")
     registry = fetch_json("catalog/contracts/registry.json")
 
     system = next(item for item in manifest["systems"] if item["id"] == "world-intelligence")
