@@ -35,8 +35,9 @@ CREATE TABLE world_intelligence.external_source_evidence (
 
 CREATE INDEX external_source_evidence_tenant_received_idx
     ON world_intelligence.external_source_evidence (tenant_ref, received_at DESC);
+-- Hash the bounded source URL so the index remains safe for the full 4096-byte URL limit.
 CREATE INDEX external_source_evidence_source_time_idx
-    ON world_intelligence.external_source_evidence (source_url, retrieved_at DESC);
+    ON world_intelligence.external_source_evidence (md5(source_url), retrieved_at DESC);
 CREATE INDEX external_source_evidence_candidate_idx
     ON world_intelligence.external_source_evidence (status, received_at)
     WHERE status = 'candidate';
