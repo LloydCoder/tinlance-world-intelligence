@@ -10,3 +10,41 @@ paths:
   /v1/signals: {get: {responses: {"200": {description: Signal query}}}}
   /v1/evidence: {get: {responses: {"200": {description: Evidence query}}}}
   /v1/provenance: {get: {responses: {"200": {description: Provenance query}}}}
+  /v1/source-evidence:
+    post:
+      operationId: ingestTwiSourceEvidence
+      summary: Accept a tenant-scoped candidate source-evidence record from TWI
+      description: This endpoint records candidate evidence only. It does not create a canonical observation or assert factual truth.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string, minLength: 16, maxLength: 128}
+        - in: header
+          name: traceparent
+          required: false
+          schema: {type: string, maxLength: 55}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../twi-source-evidence-v1.json
+      responses:
+        "201": {description: Candidate evidence accepted}
+        "200": {description: Idempotent replay}
+        "400": {description: Invalid JSON or request metadata}
+        "401": {description: Service authentication required}
+        "409": {description: Idempotency key conflicts with a different payload}
+        "413": {description: Request body exceeds configured limit}
+        "415": {description: application/json required}
+        "422": {description: Source-evidence contract validation failed}
+        "429": {description: Rate limit exceeded}
+        "503": {description: Evidence store unavailable}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
