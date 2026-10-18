@@ -17,6 +17,7 @@ class RuntimeConfig:
     storage_mode: str="memory"
     database_url: str|None=None
     rate_limit_per_minute: int=120
+    source_evidence_bearer_token: str|None=None
 
     @classmethod
     def from_env(cls)->"RuntimeConfig":
