@@ -21,6 +21,7 @@ def _payload() -> dict[str, str]:
         "claim_id": "product-launch",
         "statement": "The company launched a new product in October 2026.",
         "source_url": "https://example.com/news",
+        "source_url_redacted": False,
         "retrieved_at": "2026-10-18T12:00:00+00:00",
         "media_type": "text/html",
         "artifact_sha256": hashlib.sha256(b"raw-html").hexdigest(),
