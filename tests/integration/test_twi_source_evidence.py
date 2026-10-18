@@ -39,6 +39,7 @@ class TWISourceEvidenceIntakeTests(unittest.TestCase):
             host="127.0.0.1",
             port=0,
             bearer_token="test-token",
+            source_evidence_bearer_token="source-evidence-test-token",
             require_auth=True,
             max_body_bytes=1024 * 1024,
         )
@@ -71,7 +72,7 @@ class TWISourceEvidenceIntakeTests(unittest.TestCase):
             "traceparent": "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01",
         }
         if auth:
-            headers["Authorization"] = "Bearer test-token"
+            headers["Authorization"] = "Bearer source-evidence-test-token"
         connection.request("POST", "/v1/source-evidence", body=body, headers=headers)
         response = connection.getresponse()
         result_body = response.read()
@@ -151,7 +152,7 @@ class TWISourceEvidenceIntakeTests(unittest.TestCase):
         connection = HTTPConnection("127.0.0.1", self.port)
         body = json.dumps(_payload()).encode()
         headers = {
-            "Authorization": "Bearer test-token",
+            "Authorization": "Bearer source-evidence-test-token",
             "Content-Type": "application/json",
             "Idempotency-Key": "twi-export-idempotency-0005",
             **invalid_trace,
