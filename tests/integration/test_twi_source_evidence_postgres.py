@@ -22,6 +22,7 @@ def _payload(tenant_ref: str, source_job_id: str) -> dict[str, str]:
         "claim_id": "postgres-intake-test",
         "statement": "A candidate source-backed statement.",
         "source_url": "https://example.com/source",
+        "source_url_redacted": False,
         "retrieved_at": "2026-10-18T12:00:00+00:00",
         "media_type": "text/html",
         "artifact_sha256": hashlib.sha256(b"artifact").hexdigest(),
