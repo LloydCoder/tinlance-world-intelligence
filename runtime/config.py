@@ -31,12 +31,15 @@ class RuntimeConfig:
         if not 1<=port<=65535: raise ConfigurationError("port must be 1..65535")
         if not 1024<=max_body<=100*1024*1024: raise ConfigurationError("max body size must be 1KiB..100MiB")
         if rate_limit<1: raise ConfigurationError("rate limit must be positive")
-        token=os.getenv("WORLD_INTELLIGENCE_BEARER_TOKEN") or None
+        token = os.getenv("WORLD_INTELLIGENCE_BEARER_TOKEN") or None
+        source_evidence_token = os.getenv("WORLD_INTELLIGENCE_SOURCE_EVIDENCE_TOKEN") or None
         require=os.getenv("WORLD_INTELLIGENCE_REQUIRE_AUTH","true").lower() not in {"0","false","no"}
         storage=os.getenv("WORLD_INTELLIGENCE_STORAGE_MODE","memory").lower()
         database_url=os.getenv("DATABASE_URL") or None
         if storage not in {"memory","postgres"}: raise ConfigurationError("storage mode must be memory or postgres")
         if env in {"production","staging"}:
             if require and not token: raise ConfigurationError("bearer token is required when authentication is enabled")
+            if not source_evidence_token:
+                raise ConfigurationError("source evidence service token is required in production/staging")
             if storage!="postgres" or not database_url: raise ConfigurationError("production/staging requires PostgreSQL persistence")
-        return cls(env,host,port,max_body,token,require,storage,database_url,rate_limit)
+        return cls(env,host,port,max_body,token,require,storage,database_url,rate_limit,source_evidence_token)
