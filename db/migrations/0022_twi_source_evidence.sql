@@ -13,7 +13,7 @@ CREATE TABLE world_intelligence.external_source_evidence (
     quote varchar(350) NOT NULL CHECK (char_length(btrim(quote)) >= 8),
     quote_sha256 char(64) NOT NULL CHECK (quote_sha256 ~ '^[0-9a-f]{64}$'),
     verifier_version varchar(64) NOT NULL
-        CHECK (verifier_version ~ '^twi-citation-verifier/[0-9]+\.[0-9]+\.[0-9]+$'),
+        CHECK (verifier_version ~ '^twi-citation-verifier/[0-9]+[.][0-9]+[.][0-9]+$'),
     report_sha256 char(64) NOT NULL CHECK (report_sha256 ~ '^[0-9a-f]{64}$'),
     idempotency_key varchar(128) NOT NULL CHECK (idempotency_key ~ '^[A-Za-z0-9._:-]{16,128}$'),
     payload_sha256 char(64) NOT NULL CHECK (payload_sha256 ~ '^[0-9a-f]{64}$'),
@@ -43,7 +43,7 @@ COMMIT;
     quote varchar(350) NOT NULL CHECK (char_length(btrim(quote)) >= 8),
     quote_sha256 char(64) NOT NULL CHECK (quote_sha256 ~ '^[0-9a-f]{64}$'),
     verifier_version varchar(64) NOT NULL
-        CHECK (verifier_version ~ '^twi-citation-verifier/[0-9]+\.[0-9]+\.[0-9]+$'),
+        CHECK (verifier_version ~ '^twi-citation-verifier/[0-9]+[.][0-9]+[.][0-9]+$'),
     report_sha256 char(64) NOT NULL CHECK (report_sha256 ~ '^[0-9a-f]{64}$'),
     idempotency_key varchar(128) NOT NULL CHECK (idempotency_key ~ '^[A-Za-z0-9._:-]{16,128}$'),
     payload_sha256 char(64) NOT NULL CHECK (payload_sha256 ~ '^[0-9a-f]{64}$'),
