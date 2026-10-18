@@ -14,7 +14,7 @@ import unicodedata
 import uuid
 from datetime import UTC, datetime
 from typing import Any
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlsplit
 
 
 class SourceEvidenceValidationError(ValueError):
@@ -94,8 +94,33 @@ def validate_envelope(payload: object, idempotency_key: str, traceparent: str | 
         or parsed.username is not None
         or parsed.password is not None
         or parsed.fragment
+        or any(character.isspace() or ord(character) < 0x20 for character in source_url)
     ):
         raise SourceEvidenceValidationError("invalid source_url")
+    sensitive_query_keys = {
+        "access_token",
+        "api_key",
+        "apikey",
+        "auth",
+        "authorization",
+        "client_secret",
+        "code",
+        "credential",
+        "key",
+        "password",
+        "passwd",
+        "secret",
+        "session",
+        "sessionid",
+        "signature",
+        "sig",
+        "token",
+    }
+    if any(
+        key.lower() in sensitive_query_keys and value != "[REDACTED]"
+        for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+    ):
+        raise SourceEvidenceValidationError("source_url contains an unredacted sensitive query value")
 
     if not isinstance(payload.get("source_url_redacted"), bool):
         raise SourceEvidenceValidationError("invalid source_url_redacted")
