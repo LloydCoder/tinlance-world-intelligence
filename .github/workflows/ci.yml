@@ -55,7 +55,8 @@ jobs:
       - name: Apply foundation migration
         env:
           PGPASSWORD: postgres
-        run: psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0001_foundation_source_artifact.sql
+        run: |
+          psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0001_foundation_source_artifact.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0002_observation.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0003_entity.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0004_event.sql
@@ -76,9 +77,16 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0019_reliability.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0020_observability.sql
           psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0021_provenance_records.sql
+          psql -h 127.0.0.1 -U postgres -d world_intelligence -v ON_ERROR_STOP=1 -f db/migrations/0022_twi_source_evidence.sql
       - name: Verify schema
         env:
           PGPASSWORD: postgres
         run: |
           test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM pg_extension WHERE extname='postgis';")" = "1"
-          test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM information_schema.tables WHERE table_schema='world_intelligence';")" = "44"
+          test "$(psql -h 127.0.0.1 -U postgres -d world_intelligence -Atc "SELECT count(*) FROM information_schema.tables WHERE table_schema='world_intelligence';")" = "45"
+      - name: Install PostgreSQL runtime dependency
+        run: python -m pip install -e '.[runtime]'
+      - name: Test PostgreSQL source-evidence idempotency
+        env:
+          WORLD_INTELLIGENCE_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/world_intelligence
+        run: python tests/integration/test_twi_source_evidence_postgres.py -v
