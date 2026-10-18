@@ -18,7 +18,7 @@
     "artifact_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "quote": {"type": "string", "minLength": 8, "maxLength": 350},
     "quote_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "verifier_version": {"type": "string", "maxLength": 64},
+    "verifier_version": {"type": "string", "pattern": "^twi-citation-verifier/[0-9]+[.][0-9]+[.][0-9]+$", "maxLength": 64},
     "report_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
   }
 }
