@@ -53,9 +53,11 @@ class RuntimeHandler(BaseHTTPRequestHandler):
         value = self.headers.get("X-Request-ID", "")
         return value if _REQUEST_ID.fullmatch(value) else str(uuid4())
 
-    def _authorized(self, request_id: str) -> bool:
+    def _authorized(self, request_id: str, *, source_evidence: bool = False) -> bool:
         cfg = self.server.runtime_config
-        if not authorized(self.headers.get("Authorization"), cfg.bearer_token, required=cfg.require_auth):
+        expected_token = cfg.source_evidence_bearer_token if source_evidence else cfg.bearer_token
+        required = True if source_evidence else cfg.require_auth
+        if not authorized(self.headers.get("Authorization"), expected_token, required=required):
             self._json(401, {"error": "unauthorized"}, request_id)
             return False
         key = self.headers.get("Authorization") or self.client_address[0]
@@ -112,7 +114,7 @@ class RuntimeHandler(BaseHTTPRequestHandler):
             return self._json(413, {"error": "request_body_too_large"}, request_id)
         if self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower() != "application/json":
             return self._json(415, {"error": "application_json_required"}, request_id)
-        if not self._authorized(request_id):
+        if not self._authorized(request_id, source_evidence=True):
             return
 
         body = self.rfile.read(length)
