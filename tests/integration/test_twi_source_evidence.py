@@ -115,6 +115,19 @@ class TWISourceEvidenceIntakeTests(unittest.TestCase):
         extra_field = _payload()
         extra_field["raw_html"] = "<html>not allowed</html>"
         self.assertEqual(self.post(extra_field, idempotency_key="twi-export-idempotency-0002")[0], 422)
+        unredacted_url = _payload()
+        unredacted_url["source_url"] = "https://example.com/?access_token=secret"
+        self.assertEqual(
+            self.post(unredacted_url, idempotency_key="twi-export-idempotency-0006")[0],
+            422,
+        )
+        redacted_url = _payload()
+        redacted_url["source_url"] = "https://example.com/?access_token=%5BREDACTED%5D"
+        redacted_url["source_url_redacted"] = True
+        self.assertEqual(
+            self.post(redacted_url, idempotency_key="twi-export-idempotency-0007")[0],
+            201,
+        )
 
     def test_duplicate_json_keys_are_rejected(self) -> None:
         status, payload, _ = self.post(
