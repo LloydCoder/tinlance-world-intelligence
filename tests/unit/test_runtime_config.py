@@ -11,6 +11,22 @@ class RuntimeConfigTests(unittest.TestCase):
                 RuntimeConfig.from_env()
         finally:
             os.environ.clear(); os.environ.update(old)
+    def test_production_requires_source_evidence_service_token(self):
+        old = dict(os.environ)
+        try:
+            os.environ.update({
+                "WORLD_INTELLIGENCE_ENV": "production",
+                "WORLD_INTELLIGENCE_BEARER_TOKEN": "read-token",
+                "WORLD_INTELLIGENCE_STORAGE_MODE": "postgres",
+                "DATABASE_URL": "postgresql://example.invalid/db",
+            })
+            os.environ.pop("WORLD_INTELLIGENCE_SOURCE_EVIDENCE_TOKEN", None)
+            with self.assertRaisesRegex(ConfigurationError, "source evidence service token"):
+                RuntimeConfig.from_env()
+        finally:
+            os.environ.clear()
+            os.environ.update(old)
+
     def test_development_allows_memory(self):
         old=dict(os.environ)
         try:
