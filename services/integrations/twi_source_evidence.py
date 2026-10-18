@@ -37,6 +37,7 @@ _ALLOWED_FIELDS = {
     "claim_id",
     "statement",
     "source_url",
+    "source_url_redacted",
     "retrieved_at",
     "media_type",
     "artifact_sha256",
@@ -96,6 +97,8 @@ def validate_envelope(payload: object, idempotency_key: str, traceparent: str | 
     ):
         raise SourceEvidenceValidationError("invalid source_url")
 
+    if not isinstance(payload.get("source_url_redacted"), bool):
+        raise SourceEvidenceValidationError("invalid source_url_redacted")
     retrieved_at = _required_text(payload, "retrieved_at", maximum=64)
     try:
         timestamp = datetime.fromisoformat(retrieved_at.replace("Z", "+00:00"))
@@ -191,12 +194,12 @@ class PostgresSourceEvidenceStore:
                 """
                 INSERT INTO world_intelligence.external_source_evidence (
                     source_system, tenant_ref, source_job_id, claim_id, statement,
-                    source_url, retrieved_at, media_type, artifact_sha256, quote,
+                    source_url, source_url_redacted, retrieved_at, media_type, artifact_sha256, quote,
                     quote_sha256, verifier_version, report_sha256, idempotency_key,
                     payload_sha256, request_id, traceparent
                 ) VALUES (
                     %(source_system)s, %(tenant_ref)s, %(source_job_id)s, %(claim_id)s,
-                    %(statement)s, %(source_url)s, %(retrieved_at)s, %(media_type)s,
+                    %(statement)s, %(source_url)s, %(source_url_redacted)s, %(retrieved_at)s, %(media_type)s,
                     %(artifact_sha256)s, %(quote)s, %(quote_sha256)s, %(verifier_version)s,
                     %(report_sha256)s, %(idempotency_key)s, %(payload_sha256)s,
                     %(request_id)s, %(traceparent)s
