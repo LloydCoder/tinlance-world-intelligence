@@ -28,7 +28,16 @@ class PostgresQueryPolicyHTTPTests(unittest.TestCase):
                     "INSERT INTO world_intelligence.tenant_policies "
                     "(tenant_id, allowed_capabilities, allowed_purposes) "
                     "VALUES (%s, %s::jsonb, %s::jsonb)",
-                    (tenant_id, json.dumps(["query_entity"]), json.dumps(["account_research"])),
+                    (tenant_id, json.dumps(["query_entity", "query_region"]), json.dumps(["account_research"])),
+                )
+
+        region_name = "region-e2e-" + uuid.uuid4().hex
+        with ConnectionPool(dsn, min_size=1, max_size=2, open=True) as pool:
+            with pool.connection() as connection:
+                connection.execute(
+                    "INSERT INTO world_intelligence.geofences (name, geom) "
+                    "VALUES (%s, ST_GeomFromText(%s, 4326))",
+                    (region_name, "POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))"),
                 )
 
         config = RuntimeConfig(
@@ -64,6 +73,10 @@ class PostgresQueryPolicyHTTPTests(unittest.TestCase):
             status, body = get("/v1/entities")
             self.assertEqual(status, 200, body)
             self.assertIn("items", body)
+
+            status, body = get("/v1/regions")
+            self.assertEqual(status, 200, body)
+            self.assertTrue(any(item.get("name") == region_name and item.get("geometry", {}).get("type") == "Polygon" for item in body["items"]))
 
             status, body = get("/v1/evidence")
             self.assertEqual(status, 403, body)
