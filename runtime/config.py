@@ -45,7 +45,8 @@ class RuntimeConfig:
         database_url=os.getenv("DATABASE_URL") or None
         if storage not in {"memory","postgres"}: raise ConfigurationError("storage mode must be memory or postgres")
         if env in {"production","staging"}:
-            if require and not all((platform_issuer, platform_audience, platform_jwks_url)):
+            if not require: raise ConfigurationError("query authentication cannot be disabled in production/staging")
+            if not all((platform_issuer, platform_audience, platform_jwks_url)):
                 raise ConfigurationError("Platform issuer, audience, and JWKS URL are required for query authentication")
             if not source_evidence_token:
                 raise ConfigurationError("source evidence service token is required in production/staging")
