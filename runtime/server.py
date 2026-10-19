@@ -13,6 +13,7 @@ from api.query.service import IntelligenceQueryService
 from runtime.auth import authorized
 from runtime.config import RuntimeConfig
 from runtime.rate_limit import FixedWindowLimiter
+from runtime.platform_token import PlatformPrincipal, PlatformTokenVerifier
 from packages.contracts.api import QueryContext
 from services.integrations.twi_source_evidence import (
     IdempotencyConflictError,
@@ -69,6 +70,33 @@ class RuntimeHandler(BaseHTTPRequestHandler):
             return False
         return True
 
+    def _query_principal(self, request_id: str) -> PlatformPrincipal | None | bool:
+        verifier = self.server.token_verifier
+        if verifier is None:
+            if not self._authorized(request_id):
+                return False
+            return None
+        header = self.headers.get("Authorization", "")
+        scheme, _, token = header.partition(" ")
+        if scheme.lower() != "bearer" or not token:
+            self._json(401, {"error": "unauthorized"}, request_id)
+            return False
+        try:
+            principal = verifier.verify(token)
+        except PermissionError:
+            self._json(401, {"error": "unauthorized"}, request_id)
+            return False
+        # Identity comes from signed Platform claims, never caller-controlled headers.
+        for header_name, expected in (("X-Tinlance-Tenant-ID", principal.tenant_id), ("X-Tinlance-Subject-ID", principal.subject_id), ("X-Tinlance-Purpose", principal.purpose)):
+            supplied = self.headers.get(header_name)
+            if supplied is not None and supplied != expected:
+                self._json(403, {"error": "identity_context_mismatch"}, request_id)
+                return False
+        if not self.server.rate_limiter.allow(principal.token_id):
+            self._json(429, {"error": "rate_limited"}, request_id)
+            return False
+        return principal
+
     def do_GET(self) -> None:
         request_id = self._request_id()
         cfg = self.server.runtime_config
@@ -85,11 +113,12 @@ class RuntimeHandler(BaseHTTPRequestHandler):
                 },
                 request_id,
             )
-        if not self._authorized(request_id):
+        principal = self._query_principal(request_id)
+        if principal is False:
             return
-        tenant_id = self.headers.get("X-Tinlance-Tenant-ID", "")
-        subject_id = self.headers.get("X-Tinlance-Subject-ID", "")
-        purpose = self.headers.get("X-Tinlance-Purpose", "")
+        tenant_id = principal.tenant_id if isinstance(principal, PlatformPrincipal) else self.headers.get("X-Tinlance-Tenant-ID", "")
+        subject_id = principal.subject_id if isinstance(principal, PlatformPrincipal) else self.headers.get("X-Tinlance-Subject-ID", "")
+        purpose = principal.purpose if isinstance(principal, PlatformPrincipal) else self.headers.get("X-Tinlance-Purpose", "")
         if not _SCOPE_VALUE.fullmatch(tenant_id) or not _SCOPE_VALUE.fullmatch(subject_id) or not _PURPOSE_VALUE.fullmatch(purpose):
             return self._json(400, {"error": "query_context_required"}, request_id)
         context = QueryContext(
@@ -176,8 +205,17 @@ class WorldIntelligenceServer(ThreadingHTTPServer):
         config: RuntimeConfig,
         stores: dict[str, list[dict]] | None = None,
         tenant_policies: dict[str, dict] | None = None,
+        token_verifier: PlatformTokenVerifier | None = None,
     ):
         self.runtime_config = config
+        if token_verifier is not None:
+            self.token_verifier = token_verifier
+        elif config.platform_issuer and config.platform_audience and config.platform_jwks_url:
+            self.token_verifier = PlatformTokenVerifier(issuer=config.platform_issuer, audience=config.platform_audience, jwks_url=config.platform_jwks_url)
+        else:
+            self.token_verifier = None
+        if config.environment in {"production", "staging"} and config.require_auth and self.token_verifier is None:
+            raise ValueError("Platform JWT verification is required in production/staging")
         self.rate_limiter = FixedWindowLimiter(config.rate_limit_per_minute)
         self.pool = None
         if config.storage_mode == "postgres":
