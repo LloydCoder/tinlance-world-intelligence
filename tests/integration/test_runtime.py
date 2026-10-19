@@ -111,15 +111,31 @@ class RuntimeHTTPTests(unittest.TestCase):
             ("127.0.0.1", 0),
             cfg,
             {"entities": [{"id": "e1"}]},
-            tenant_policies={"tenant-a": {"allowed_capabilities": ["query_entity"], "allowed_purposes": ["account_research"]}},
+            tenant_policies={
+                "tenant-a": {
+                    "allowed_capabilities": ["query_entity"],
+                    "allowed_purposes": ["account_research"],
+                }
+            },
             token_verifier=FakeVerifier(),
         )
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            def request(tenant_header=None, subject_header=None, purpose_header=None, request_id_header=None, traceparent_header=None):
+            def request(
+                tenant_header=None,
+                subject_header=None,
+                purpose_header=None,
+                request_id_header=None,
+                traceparent_header=None,
+            ):
                 connection = HTTPConnection("127.0.0.1", server.server_address[1], timeout=5)
-                headers = {"Authorization": "Bearer platform-token", "X-Tinlance-Purpose": "account_research", "X-Request-ID": "platform-identity-test", "traceparent": "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"}
+                headers = {
+                    "Authorization": "Bearer platform-token",
+                    "X-Tinlance-Purpose": "account_research",
+                    "X-Request-ID": "platform-identity-test",
+                    "traceparent": "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01",
+                }
                 if tenant_header is not None:
                     headers["X-Tinlance-Tenant-ID"] = tenant_header
                 if subject_header is not None:
@@ -151,7 +167,9 @@ class RuntimeHTTPTests(unittest.TestCase):
             status, body = request(request_id_header="other-request-id")
             self.assertEqual(status, 403, body)
             self.assertEqual(body.get("error"), "identity_context_mismatch")
-            status, body = request(traceparent_header="00-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbb-01")
+            status, body = request(
+                traceparent_header="00-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbb-01"
+            )
             self.assertEqual(status, 403, body)
             self.assertEqual(body.get("error"), "identity_context_mismatch")
         finally:
