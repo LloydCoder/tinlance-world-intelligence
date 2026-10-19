@@ -17,6 +17,7 @@ TABLES = {
     "signals": "world_intelligence.signals",
     "evidence": "world_intelligence.evidence",
     "provenance": "world_intelligence.provenance_records",
+    "regions": "world_intelligence.geofences",
 }
 
 @dataclass
@@ -69,10 +70,17 @@ class PostgresQueryService:
             )
             if allowed:
                 table = TABLES[resource]
-                rows = connection.execute(
-                    f"SELECT to_jsonb(row) FROM (SELECT * FROM {table} ORDER BY id LIMIT %s OFFSET %s) row",
-                    (limit, cursor),
-                ).fetchall()
+                if resource == "regions":
+                    rows = connection.execute(
+                        "SELECT jsonb_build_object('id', id, 'name', name, 'geometry', ST_AsGeoJSON(geom)::jsonb) "
+                        "FROM world_intelligence.geofences ORDER BY id LIMIT %s OFFSET %s",
+                        (limit, cursor),
+                    ).fetchall()
+                else:
+                    rows = connection.execute(
+                        f"SELECT to_jsonb(row) FROM (SELECT * FROM {table} ORDER BY id LIMIT %s OFFSET %s) row",
+                        (limit, cursor),
+                    ).fetchall()
                 total = connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
             else:
                 rows = []

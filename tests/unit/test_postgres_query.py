@@ -16,7 +16,7 @@ class Cursor:
         return [({"id": "e1"},)]
     def fetchone(self):
         if "allowed_capabilities" in self.sql:
-            return (["query_entity"], ["account_research"])
+            return (["query_entity", "query_region"], ["account_research"])
         if "count(*)" in self.sql:
             return (1,)
         return None
@@ -46,6 +46,11 @@ class PostgresQueryTests(unittest.TestCase):
         sql = [item[0] for item in self.pool.conn.cursor.executed]
         self.assertTrue(any("tenant_policies" in statement for statement in sql))
         self.assertTrue(any("INSERT INTO world_intelligence.security_audit_events" in statement for statement in sql))
+
+    def test_region_query_uses_geojson_projection(self):
+        self.service.query("regions", context=self.context)
+        statements = [item[0] for item in self.pool.conn.cursor.executed]
+        self.assertTrue(any("ST_AsGeoJSON" in statement for statement in statements))
 
     def test_unknown_resource_fails_closed(self):
         with self.assertRaises(KeyError):

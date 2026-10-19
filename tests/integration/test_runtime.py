@@ -13,10 +13,10 @@ class RuntimeHTTPTests(unittest.TestCase):
         cls.server = WorldIntelligenceServer(
             ("127.0.0.1", 0),
             cfg,
-            {"entities": [{"id": "e1"}], "evidence": [{"id": "evidence-1"}]},
+            {"entities": [{"id": "e1"}], "evidence": [{"id": "evidence-1"}], "regions": [{"id": "r1", "name": "Region One"}]},
             tenant_policies={
                 "tenant-a": {
-                    "allowed_capabilities": ["query_entity"],
+                    "allowed_capabilities": ["query_entity", "query_region"],
                     "allowed_purposes": ["account_research"],
                 }
             },
@@ -65,6 +65,11 @@ class RuntimeHTTPTests(unittest.TestCase):
         self.assertEqual(self.get("/v1/entities", tenant=None)[0], 400)
         self.assertEqual(self.get("/v1/entities", subject=None)[0], 400)
         self.assertEqual(self.get("/v1/entities", purpose=None)[0], 400)
+
+    def test_region_query_is_a_registered_capability(self):
+        status, body = self.get("/v1/regions")
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["items"][0]["id"], "r1")
 
     def test_tenant_without_policy_is_denied(self):
         self.assertEqual(self.get("/v1/entities", tenant="tenant-b")[0], 403)

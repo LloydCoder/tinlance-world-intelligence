@@ -14,6 +14,7 @@ RESOURCE_CAPABILITIES = {
     "signals": Capability.QUERY_SIGNALS.value,
     "evidence": Capability.QUERY_EVIDENCE.value,
     "provenance": Capability.QUERY_PROVENANCE.value,
+    "regions": Capability.QUERY_REGION.value,
 }
 
 class IntelligenceQueryService:

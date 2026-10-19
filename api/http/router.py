@@ -15,7 +15,7 @@ class IntelligenceRouter:
         self.service = service
         self.routes = tuple(
             Route("GET", f"/v1/{resource}", resource, RESOURCE_CAPABILITIES[resource])
-            for resource in ("entities", "events", "world-state", "changes", "signals", "evidence", "provenance")
+            for resource in ("entities", "events", "world-state", "changes", "signals", "evidence", "provenance", "regions")
         )
 
     def dispatch(self, path: str, legacy_limit: int | None = None, *, context=None):
