@@ -46,9 +46,9 @@ class RuntimeConfig:
         if storage not in {"memory","postgres"}: raise ConfigurationError("storage mode must be memory or postgres")
         if env in {"production","staging"}:
             if not require: raise ConfigurationError("query authentication cannot be disabled in production/staging")
-            if not all((platform_issuer, platform_audience, platform_jwks_url)):
-                raise ConfigurationError("Platform issuer, audience, and JWKS URL are required for query authentication")
             if not source_evidence_token:
                 raise ConfigurationError("source evidence service token is required in production/staging")
+            if not all((platform_issuer, platform_audience, platform_jwks_url)):
+                raise ConfigurationError("Platform issuer, audience, and JWKS URL are required for query authentication")
             if storage!="postgres" or not database_url: raise ConfigurationError("production/staging requires PostgreSQL persistence")
         return cls(env,host,port,max_body,token,require,storage,database_url,rate_limit,source_evidence_token,platform_issuer,platform_audience,platform_jwks_url)
