@@ -115,11 +115,15 @@ class RuntimeHTTPTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            def request(tenant_header=None):
+            def request(tenant_header=None, subject_header=None, purpose_header=None):
                 connection = HTTPConnection("127.0.0.1", server.server_address[1], timeout=5)
                 headers = {"Authorization": "Bearer platform-token", "X-Tinlance-Purpose": "account_research", "X-Request-ID": "platform-identity-test"}
                 if tenant_header is not None:
                     headers["X-Tinlance-Tenant-ID"] = tenant_header
+                if subject_header is not None:
+                    headers["X-Tinlance-Subject-ID"] = subject_header
+                if purpose_header is not None:
+                    headers["X-Tinlance-Purpose"] = purpose_header
                 connection.request("GET", "/v1/entities", headers=headers)
                 response = connection.getresponse()
                 status = response.status
@@ -130,6 +134,12 @@ class RuntimeHTTPTests(unittest.TestCase):
             status, body = request()
             self.assertEqual(status, 200, body)
             status, body = request("tenant-b")
+            self.assertEqual(status, 403, body)
+            self.assertEqual(body.get("error"), "identity_context_mismatch")
+            status, body = request(subject_header="subject-b")
+            self.assertEqual(status, 403, body)
+            self.assertEqual(body.get("error"), "identity_context_mismatch")
+            status, body = request(purpose_header="marketing")
             self.assertEqual(status, 403, body)
             self.assertEqual(body.get("error"), "identity_context_mismatch")
         finally:
