@@ -87,7 +87,7 @@ class RuntimeHandler(BaseHTTPRequestHandler):
             self._json(401, {"error": "unauthorized"}, request_id)
             return False
         # Identity comes from signed Platform claims, never caller-controlled headers.
-        for header_name, expected in (("X-Tinlance-Tenant-ID", principal.tenant_id), ("X-Tinlance-Subject-ID", principal.subject_id)):
+        for header_name, expected in (("X-Tinlance-Tenant-ID", principal.tenant_id), ("X-Tinlance-Subject-ID", principal.subject_id), ("X-Tinlance-Purpose", principal.purpose)):
             supplied = self.headers.get(header_name)
             if supplied is not None and supplied != expected:
                 self._json(403, {"error": "identity_context_mismatch"}, request_id)
@@ -118,7 +118,7 @@ class RuntimeHandler(BaseHTTPRequestHandler):
             return
         tenant_id = principal.tenant_id if isinstance(principal, PlatformPrincipal) else self.headers.get("X-Tinlance-Tenant-ID", "")
         subject_id = principal.subject_id if isinstance(principal, PlatformPrincipal) else self.headers.get("X-Tinlance-Subject-ID", "")
-        purpose = self.headers.get("X-Tinlance-Purpose", "")
+        purpose = principal.purpose if isinstance(principal, PlatformPrincipal) else self.headers.get("X-Tinlance-Purpose", "")
         if not _SCOPE_VALUE.fullmatch(tenant_id) or not _SCOPE_VALUE.fullmatch(subject_id) or not _PURPOSE_VALUE.fullmatch(purpose):
             return self._json(400, {"error": "query_context_required"}, request_id)
         context = QueryContext(
