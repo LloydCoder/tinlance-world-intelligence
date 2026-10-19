@@ -1,6 +1,4 @@
-"""HTTP route-to-capability mapping; capability is derived from the route, never from caller input."""
-from dataclasses import replace
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from urllib.parse import parse_qs, urlparse
 
 from api.query.service import RESOURCE_CAPABILITIES
@@ -20,7 +18,7 @@ class IntelligenceRouter:
             for resource in ("entities", "events", "world-state", "changes", "signals", "evidence", "provenance")
         )
 
-    def dispatch(self, path: str, context=None, legacy_limit: int | None = None):
+    def dispatch(self, path: str, legacy_limit: int | None = None, *, context=None):
         parsed = urlparse(path)
         query = parse_qs(parsed.query, keep_blank_values=False)
         try:
