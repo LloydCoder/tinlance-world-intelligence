@@ -101,6 +101,8 @@ class RuntimeHTTPTests(unittest.TestCase):
                     token_id="token-1",
                     scopes=frozenset({"world-intelligence:query"}),
                     purpose="account_research",
+                    request_id="platform-identity-test",
+                    traceparent="00-0123456789abcdef0123456789abcdef-0123456789abcdef-01",
                     expires_at=datetime.now(UTC) + timedelta(minutes=2),
                 )
 
@@ -115,15 +117,19 @@ class RuntimeHTTPTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            def request(tenant_header=None, subject_header=None, purpose_header=None):
+            def request(tenant_header=None, subject_header=None, purpose_header=None, request_id_header=None, traceparent_header=None):
                 connection = HTTPConnection("127.0.0.1", server.server_address[1], timeout=5)
-                headers = {"Authorization": "Bearer platform-token", "X-Tinlance-Purpose": "account_research", "X-Request-ID": "platform-identity-test"}
+                headers = {"Authorization": "Bearer platform-token", "X-Tinlance-Purpose": "account_research", "X-Request-ID": "platform-identity-test", "traceparent": "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"}
                 if tenant_header is not None:
                     headers["X-Tinlance-Tenant-ID"] = tenant_header
                 if subject_header is not None:
                     headers["X-Tinlance-Subject-ID"] = subject_header
                 if purpose_header is not None:
                     headers["X-Tinlance-Purpose"] = purpose_header
+                if request_id_header is not None:
+                    headers["X-Request-ID"] = request_id_header
+                if traceparent_header is not None:
+                    headers["traceparent"] = traceparent_header
                 connection.request("GET", "/v1/entities", headers=headers)
                 response = connection.getresponse()
                 status = response.status
@@ -140,6 +146,12 @@ class RuntimeHTTPTests(unittest.TestCase):
             self.assertEqual(status, 403, body)
             self.assertEqual(body.get("error"), "identity_context_mismatch")
             status, body = request(purpose_header="marketing")
+            self.assertEqual(status, 403, body)
+            self.assertEqual(body.get("error"), "identity_context_mismatch")
+            status, body = request(request_id_header="other-request-id")
+            self.assertEqual(status, 403, body)
+            self.assertEqual(body.get("error"), "identity_context_mismatch")
+            status, body = request(traceparent_header="00-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbb-01")
             self.assertEqual(status, 403, body)
             self.assertEqual(body.get("error"), "identity_context_mismatch")
         finally:
