@@ -4,6 +4,7 @@ import hashlib
 import json
 import threading
 import unittest
+import uuid
 from http.client import HTTPConnection
 
 from runtime.config import RuntimeConfig
@@ -59,11 +60,13 @@ class TWISourceEvidenceIntakeTests(unittest.TestCase):
         payload: object,
         *,
         auth: bool = True,
-        idempotency_key: str = "twi-export-idempotency-0001",
+        idempotency_key: str | None = None,
         content_type: str = "application/json",
         raw_body: bytes | None = None,
     ) -> tuple[int, dict, dict[str, str]]:
         connection = HTTPConnection("127.0.0.1", self.port)
+        if idempotency_key is None:
+            idempotency_key = "twi-export-test-" + uuid.uuid4().hex
         body = raw_body if raw_body is not None else json.dumps(payload).encode()
         headers = {
             "Content-Type": content_type,
@@ -89,18 +92,20 @@ class TWISourceEvidenceIntakeTests(unittest.TestCase):
         self.assertEqual(headers["x-request-id"], "w5-source-evidence-test")
 
     def test_idempotent_retry_returns_same_evidence_id(self) -> None:
-        first_status, first, _ = self.post(_payload())
-        replay_status, replay, _ = self.post(_payload())
+        key = "twi-export-idempotent-retry"
+        first_status, first, _ = self.post(_payload(), idempotency_key=key)
+        replay_status, replay, _ = self.post(_payload(), idempotency_key=key)
         self.assertEqual(first_status, 201)
         self.assertEqual(replay_status, 200)
         self.assertEqual(first["evidence_id"], replay["evidence_id"])
         self.assertTrue(replay["replayed"])
 
     def test_reusing_idempotency_key_for_changed_payload_is_rejected(self) -> None:
-        self.assertEqual(self.post(_payload())[0], 201)
+        key = "twi-export-conflicting-payload"
+        self.assertEqual(self.post(_payload(), idempotency_key=key)[0], 201)
         changed = _payload()
         changed["statement"] = "A different statement with the same key."
-        status, payload, _ = self.post(changed)
+        status, payload, _ = self.post(changed, idempotency_key=key)
         self.assertEqual(status, 409)
         self.assertEqual(payload["error"], "idempotency_conflict")
 
