@@ -37,4 +37,43 @@ class RuntimeConfigTests(unittest.TestCase):
         finally:
             os.environ.clear(); os.environ.update(old)
 
+
+    def test_production_requires_platform_jwt_configuration(self):
+        old = dict(os.environ)
+        try:
+            os.environ.update({
+                "WORLD_INTELLIGENCE_ENV": "production",
+                "WORLD_INTELLIGENCE_REQUIRE_AUTH": "true",
+                "WORLD_INTELLIGENCE_SOURCE_EVIDENCE_TOKEN": "source-token",
+                "WORLD_INTELLIGENCE_STORAGE_MODE": "postgres",
+                "DATABASE_URL": "postgresql://example.invalid/db",
+            })
+            for key in ("WORLD_INTELLIGENCE_PLATFORM_ISSUER", "WORLD_INTELLIGENCE_PLATFORM_AUDIENCE", "WORLD_INTELLIGENCE_PLATFORM_JWKS_URL"):
+                os.environ.pop(key, None)
+            with self.assertRaisesRegex(ConfigurationError, "Platform issuer, audience, and JWKS URL"):
+                RuntimeConfig.from_env()
+        finally:
+            os.environ.clear()
+            os.environ.update(old)
+
+    def test_production_cannot_disable_query_authentication(self):
+        old = dict(os.environ)
+        try:
+            os.environ.update({
+                "WORLD_INTELLIGENCE_ENV": "production",
+                "WORLD_INTELLIGENCE_REQUIRE_AUTH": "false",
+                "WORLD_INTELLIGENCE_SOURCE_EVIDENCE_TOKEN": "source-token",
+                "WORLD_INTELLIGENCE_STORAGE_MODE": "postgres",
+                "DATABASE_URL": "postgresql://example.invalid/db",
+                "WORLD_INTELLIGENCE_PLATFORM_ISSUER": "https://identity.tinlance.test",
+                "WORLD_INTELLIGENCE_PLATFORM_AUDIENCE": "world-intelligence",
+                "WORLD_INTELLIGENCE_PLATFORM_JWKS_URL": "https://identity.tinlance.test/.well-known/jwks.json",
+            })
+            with self.assertRaisesRegex(ConfigurationError, "cannot be disabled"):
+                RuntimeConfig.from_env()
+        finally:
+            os.environ.clear()
+            os.environ.update(old)
+
+
 if __name__=="__main__": unittest.main()
