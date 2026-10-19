@@ -18,6 +18,9 @@ class RuntimeConfig:
     database_url: str|None=None
     rate_limit_per_minute: int=120
     source_evidence_bearer_token: str|None=None
+    platform_issuer: str|None=None
+    platform_audience: str|None=None
+    platform_jwks_url: str|None=None
 
     @classmethod
     def from_env(cls)->"RuntimeConfig":
@@ -34,13 +37,17 @@ class RuntimeConfig:
         if rate_limit<1: raise ConfigurationError("rate limit must be positive")
         token = os.getenv("WORLD_INTELLIGENCE_BEARER_TOKEN") or None
         source_evidence_token = os.getenv("WORLD_INTELLIGENCE_SOURCE_EVIDENCE_TOKEN") or None
+        platform_issuer = os.getenv("WORLD_INTELLIGENCE_PLATFORM_ISSUER") or None
+        platform_audience = os.getenv("WORLD_INTELLIGENCE_PLATFORM_AUDIENCE") or None
+        platform_jwks_url = os.getenv("WORLD_INTELLIGENCE_PLATFORM_JWKS_URL") or None
         require=os.getenv("WORLD_INTELLIGENCE_REQUIRE_AUTH","true").lower() not in {"0","false","no"}
         storage=os.getenv("WORLD_INTELLIGENCE_STORAGE_MODE","memory").lower()
         database_url=os.getenv("DATABASE_URL") or None
         if storage not in {"memory","postgres"}: raise ConfigurationError("storage mode must be memory or postgres")
         if env in {"production","staging"}:
-            if require and not token: raise ConfigurationError("bearer token is required when authentication is enabled")
+            if require and not all((platform_issuer, platform_audience, platform_jwks_url)):
+                raise ConfigurationError("Platform issuer, audience, and JWKS URL are required for query authentication")
             if not source_evidence_token:
                 raise ConfigurationError("source evidence service token is required in production/staging")
             if storage!="postgres" or not database_url: raise ConfigurationError("production/staging requires PostgreSQL persistence")
-        return cls(env,host,port,max_body,token,require,storage,database_url,rate_limit,source_evidence_token)
+        return cls(env,host,port,max_body,token,require,storage,database_url,rate_limit,source_evidence_token,platform_issuer,platform_audience,platform_jwks_url)
