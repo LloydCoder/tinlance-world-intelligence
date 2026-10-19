@@ -1,9 +1,9 @@
 """JWT resource-server validation for Platform-issued World Intelligence access tokens."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
-import re
 from typing import Any
 from urllib.parse import urlsplit
 
