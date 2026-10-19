@@ -86,10 +86,19 @@ class RuntimeHandler(BaseHTTPRequestHandler):
         except PermissionError:
             self._json(401, {"error": "unauthorized"}, request_id)
             return False
-        # Identity comes from signed Platform claims, never caller-controlled headers.
-        for header_name, expected in (("X-Tinlance-Tenant-ID", principal.tenant_id), ("X-Tinlance-Subject-ID", principal.subject_id), ("X-Tinlance-Purpose", principal.purpose)):
+        # Identity and telemetry context come from signed Platform claims.
+        expected_headers = (
+            ("X-Tinlance-Tenant-ID", principal.tenant_id, False),
+            ("X-Tinlance-Subject-ID", principal.subject_id, False),
+            ("X-Tinlance-Purpose", principal.purpose, False),
+            ("X-Request-ID", principal.request_id, True),
+            ("traceparent", principal.traceparent, True),
+        )
+        for header_name, expected, required in expected_headers:
             supplied = self.headers.get(header_name)
-            if supplied is not None and supplied != expected:
+            if (required and supplied != expected) or (
+                supplied is not None and supplied != expected
+            ):
                 self._json(403, {"error": "identity_context_mismatch"}, request_id)
                 return False
         if not self.server.rate_limiter.allow(principal.token_id):
