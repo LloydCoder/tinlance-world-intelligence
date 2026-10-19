@@ -20,6 +20,7 @@ class PlatformPrincipal:
     principal_type: str
     token_id: str
     scopes: frozenset[str]
+    purpose: str
     expires_at: datetime
 
 
@@ -101,6 +102,7 @@ class PlatformTokenVerifier:
             or len(set(tenant_values)) != 1
         ):
             raise PermissionError("access token tenant claim is missing or contradictory")
+        purpose = self._claim_string(claims, "purpose")
         scopes = self._claim_set(claims, ("scope", "scp"))
         if "world-intelligence:query" not in scopes:
             raise PermissionError("World Intelligence query scope is required")
@@ -120,6 +122,7 @@ class PlatformTokenVerifier:
             principal_type=principal_type,
             token_id=token_id,
             scopes=frozenset(scopes),
+            purpose=purpose,
             expires_at=expires_at,
         )
 
