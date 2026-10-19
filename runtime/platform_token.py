@@ -87,7 +87,12 @@ class PlatformTokenVerifier:
                 issuer=self._issuer,
                 audience=self._audience,
                 leeway=self._leeway,
-                options={"require": ["exp", "iat", "iss", "sub", "jti", "client_id", "request_id", "traceparent"]},
+                options={
+                    "require": [
+                        "exp", "iat", "iss", "sub", "jti", "client_id",
+                        "request_id", "traceparent",
+                    ]
+                },
             )
         except PermissionError:
             raise
@@ -103,7 +108,10 @@ class PlatformTokenVerifier:
         tenant_values = [claims[name] for name in ("tenant_id", "tid") if name in claims]
         if (
             not tenant_values
-            or any(not isinstance(value, str) or not value or value != value.strip() for value in tenant_values)
+            or any(
+                not isinstance(value, str) or not value or value != value.strip()
+                for value in tenant_values
+            )
             or len(set(tenant_values)) != 1
         ):
             raise PermissionError("access token tenant claim is missing or contradictory")
