@@ -100,6 +100,7 @@ class RuntimeHTTPTests(unittest.TestCase):
                     principal_type="agent",
                     token_id="token-1",
                     scopes=frozenset({"world-intelligence:query"}),
+                    purpose="account_research",
                     expires_at=datetime.now(UTC) + timedelta(minutes=2),
                 )
 
