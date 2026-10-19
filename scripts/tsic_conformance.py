@@ -4,14 +4,28 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+from pathlib import Path
 from urllib.request import Request, urlopen
 
-TSIC_REVISION = "72c3664d7917bf9f8adb071713719589ff159972"
+TSIC_REVISION = os.environ.get(
+    "TSIC_REVISION", "afdc624db11acd4e47f5ef5db10ab4d1c2ddf797"
+)
+TSIC_ROOT = os.environ.get("TSIC_ROOT")
 RAW_ROOT = f"https://raw.githubusercontent.com/LloydCoder/tinlance-system-integration/{TSIC_REVISION}"
 REQUIRED = {"identity-context", "event-envelope", "delivery-semantics", "trace-context", "economic-attribution"}
 
 
 def fetch_json(path: str) -> dict:
+    if TSIC_ROOT:
+        candidate = (Path(TSIC_ROOT) / path).resolve()
+        root = Path(TSIC_ROOT).resolve()
+        if root not in candidate.parents:
+            raise RuntimeError(f"TSIC contract path escapes pinned checkout: {path}")
+        if not candidate.is_file():
+            raise RuntimeError(f"TSIC contract missing from pinned checkout: {path}")
+        return json.loads(candidate.read_text(encoding="utf-8"))
     request = Request(
         f"{RAW_ROOT}/{path}",
         headers={"Accept": "application/json", "User-Agent": "tinlance-world-intelligence-ci"},
@@ -22,7 +36,22 @@ def fetch_json(path: str) -> dict:
         return json.load(response)
 
 
+def verify_local_revision() -> None:
+    if not TSIC_ROOT:
+        return
+    result = subprocess.run(
+        ["git", "-C", TSIC_ROOT, "rev-parse", "HEAD"],
+        check=False, capture_output=True, text=True,
+    )
+    if result.returncode or result.stdout.strip() != TSIC_REVISION:
+        raise RuntimeError(
+            f"TSIC checkout revision mismatch: expected {TSIC_REVISION}, "
+            f"actual {result.stdout.strip() if result.returncode == 0 else result.stderr.strip()}"
+        )
+
+
 def main() -> None:
+    verify_local_revision()
     manifest = fetch_json("manifests/ecosystem.json")
     adapter = fetch_json("integrations/world-intelligence/adapter.json")
     registry = fetch_json("catalog/contracts/registry.json")
