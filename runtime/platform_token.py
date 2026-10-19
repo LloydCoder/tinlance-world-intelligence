@@ -1,6 +1,7 @@
 """JWT resource-server validation for Platform-issued World Intelligence access tokens."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
@@ -10,6 +11,8 @@ import jwt
 
 _ALLOWED_ALGORITHMS = frozenset({"RS256", "PS256", "ES256", "EdDSA"})
 _ALLOWED_PRINCIPAL_TYPES = frozenset({"user", "service", "agent", "workload"})
+_REQUEST_ID = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_TRACEPARENT = re.compile(r"^(?!ff-)([0-9a-f]{2})-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,6 +24,8 @@ class PlatformPrincipal:
     token_id: str
     scopes: frozenset[str]
     purpose: str
+    request_id: str
+    traceparent: str
     expires_at: datetime
 
 
@@ -82,7 +87,12 @@ class PlatformTokenVerifier:
                 issuer=self._issuer,
                 audience=self._audience,
                 leeway=self._leeway,
-                options={"require": ["exp", "iat", "iss", "sub", "jti", "client_id"]},
+                options={
+                    "require": [
+                        "exp", "iat", "iss", "sub", "jti", "client_id",
+                        "request_id", "traceparent",
+                    ]
+                },
             )
         except PermissionError:
             raise
@@ -98,11 +108,25 @@ class PlatformTokenVerifier:
         tenant_values = [claims[name] for name in ("tenant_id", "tid") if name in claims]
         if (
             not tenant_values
-            or any(not isinstance(value, str) or not value or value != value.strip() for value in tenant_values)
+            or any(
+                not isinstance(value, str) or not value or value != value.strip()
+                for value in tenant_values
+            )
             or len(set(tenant_values)) != 1
         ):
             raise PermissionError("access token tenant claim is missing or contradictory")
         purpose = self._claim_string(claims, "purpose")
+        request_id = self._claim_string(claims, "request_id")
+        traceparent = self._claim_string(claims, "traceparent")
+        trace_match = _TRACEPARENT.fullmatch(traceparent)
+        if not _REQUEST_ID.fullmatch(request_id):
+            raise PermissionError("access token request ID is invalid")
+        if (
+            trace_match is None
+            or trace_match.group(2) == "0" * 32
+            or trace_match.group(3) == "0" * 16
+        ):
+            raise PermissionError("access token traceparent is invalid")
         scopes = self._claim_set(claims, ("scope", "scp"))
         if "world-intelligence:query" not in scopes:
             raise PermissionError("World Intelligence query scope is required")
@@ -123,6 +147,8 @@ class PlatformTokenVerifier:
             token_id=token_id,
             scopes=frozenset(scopes),
             purpose=purpose,
+            request_id=request_id,
+            traceparent=traceparent,
             expires_at=expires_at,
         )
 

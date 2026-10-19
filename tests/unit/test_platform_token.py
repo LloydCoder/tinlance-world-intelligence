@@ -48,6 +48,8 @@ class PlatformTokenVerifierTests(unittest.TestCase):
             "tenant_id": "tenant-a",
             "scope": "world-intelligence:query",
             "purpose": "account_research",
+            "request_id": "test-request-1",
+            "traceparent": "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01",
             "iat": int(now.timestamp()),
             "exp": int((now + timedelta(minutes=3)).timestamp()),
         }
@@ -78,6 +80,8 @@ class PlatformTokenVerifierTests(unittest.TestCase):
             {"tenant_id": "tenant-a", "tid": "tenant-b"},
             {"scope": "unrelated:scope"},
             {"purpose": ""},
+            {"request_id": ""},
+            {"traceparent": "not-a-traceparent"},
             {"principal_type": "unknown"},
         )
         for claims in invalid_claims:
