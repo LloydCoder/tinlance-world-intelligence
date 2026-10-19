@@ -90,3 +90,7 @@ jobs:
         env:
           WORLD_INTELLIGENCE_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/world_intelligence
         run: python tests/integration/test_twi_source_evidence_postgres.py -v
+      - name: Test PostgreSQL tenant policy and query audit enforcement
+        env:
+          WORLD_INTELLIGENCE_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/world_intelligence
+        run: python tests/integration/test_query_policy_postgres.py -v

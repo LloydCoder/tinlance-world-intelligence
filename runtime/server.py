@@ -13,6 +13,7 @@ from api.query.service import IntelligenceQueryService
 from runtime.auth import authorized
 from runtime.config import RuntimeConfig
 from runtime.rate_limit import FixedWindowLimiter
+from packages.contracts.api import QueryContext
 from services.integrations.twi_source_evidence import (
     IdempotencyConflictError,
     InMemorySourceEvidenceStore,
@@ -23,6 +24,8 @@ from services.integrations.twi_source_evidence import (
 
 
 _REQUEST_ID = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_SCOPE_VALUE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
+_PURPOSE_VALUE = re.compile(r"^[a-z][a-z0-9._:-]{0,127}$")
 
 
 def _reject_duplicate_json_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -84,13 +87,27 @@ class RuntimeHandler(BaseHTTPRequestHandler):
             )
         if not self._authorized(request_id):
             return
+        tenant_id = self.headers.get("X-Tinlance-Tenant-ID", "")
+        subject_id = self.headers.get("X-Tinlance-Subject-ID", "")
+        purpose = self.headers.get("X-Tinlance-Purpose", "")
+        if not _SCOPE_VALUE.fullmatch(tenant_id) or not _SCOPE_VALUE.fullmatch(subject_id) or not _PURPOSE_VALUE.fullmatch(purpose):
+            return self._json(400, {"error": "query_context_required"}, request_id)
+        context = QueryContext(
+            tenant_id=tenant_id,
+            subject_id=subject_id,
+            purpose=purpose,
+            request_id=request_id,
+            traceparent=self.headers.get("traceparent"),
+        )
         try:
-            page = self.server.router.dispatch(self.path)
+            page = self.server.router.dispatch(self.path, context=context)
             return self._json(
                 200,
                 {"items": page.items, "next_cursor": page.next_cursor, "total": page.total},
                 request_id,
             )
+        except PermissionError:
+            return self._json(403, {"error": "forbidden"}, request_id)
         except KeyError:
             return self._json(404, {"error": "not_found"}, request_id)
         except ValueError:
@@ -158,6 +175,7 @@ class WorldIntelligenceServer(ThreadingHTTPServer):
         address: tuple[str, int],
         config: RuntimeConfig,
         stores: dict[str, list[dict]] | None = None,
+        tenant_policies: dict[str, dict] | None = None,
     ):
         self.runtime_config = config
         self.rate_limiter = FixedWindowLimiter(config.rate_limit_per_minute)
@@ -181,7 +199,7 @@ class WorldIntelligenceServer(ThreadingHTTPServer):
             service = PostgresQueryService(self.pool)
             self.evidence_store = PostgresSourceEvidenceStore(self.pool)
         else:
-            service = IntelligenceQueryService(stores or {})
+            service = IntelligenceQueryService(stores or {}, tenant_policies=tenant_policies)
             self.evidence_store = InMemorySourceEvidenceStore()
         self.router = IntelligenceRouter(service)
         super().__init__(address, RuntimeHandler)
