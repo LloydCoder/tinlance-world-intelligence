@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Provenance-first temporal intelligence fabric."
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
-dependencies = []
+dependencies = ["PyJWT[crypto]>=2.15,<3"]
 
 [project.optional-dependencies]
 runtime = ["psycopg[binary,pool]==3.3.6"]
