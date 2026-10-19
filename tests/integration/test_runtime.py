@@ -1,10 +1,12 @@
 import json
 import threading
 import unittest
+from datetime import UTC, datetime, timedelta
 from http.client import HTTPConnection
 
 from runtime.config import RuntimeConfig
 from runtime.server import WorldIntelligenceServer
+from runtime.platform_token import PlatformPrincipal
 
 class RuntimeHTTPTests(unittest.TestCase):
     @classmethod
@@ -85,6 +87,54 @@ class RuntimeHTTPTests(unittest.TestCase):
 
     def test_unknown_route(self):
         self.assertEqual(self.get("/v1/nope")[0], 404)
+
+    def test_query_identity_is_derived_from_platform_token_not_headers(self):
+        class FakeVerifier:
+            def verify(self, token):
+                if token != "platform-token":
+                    raise PermissionError("invalid token")
+                return PlatformPrincipal(
+                    tenant_id="tenant-a",
+                    subject_id="subject-1",
+                    client_id="platform-client",
+                    principal_type="agent",
+                    token_id="token-1",
+                    scopes=frozenset({"world-intelligence:query"}),
+                    expires_at=datetime.now(UTC) + timedelta(minutes=2),
+                )
+
+        cfg = RuntimeConfig(host="127.0.0.1", port=0, bearer_token=None, require_auth=True)
+        server = WorldIntelligenceServer(
+            ("127.0.0.1", 0),
+            cfg,
+            {"entities": [{"id": "e1"}]},
+            tenant_policies={"tenant-a": {"allowed_capabilities": ["query_entity"], "allowed_purposes": ["account_research"]}},
+            token_verifier=FakeVerifier(),
+        )
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            def request(tenant_header=None):
+                connection = HTTPConnection("127.0.0.1", server.server_address[1], timeout=5)
+                headers = {"Authorization": "Bearer platform-token", "X-Tinlance-Purpose": "account_research", "X-Request-ID": "platform-identity-test"}
+                if tenant_header is not None:
+                    headers["X-Tinlance-Tenant-ID"] = tenant_header
+                connection.request("GET", "/v1/entities", headers=headers)
+                response = connection.getresponse()
+                status = response.status
+                body = json.loads(response.read())
+                connection.close()
+                return status, body
+
+            status, body = request()
+            self.assertEqual(status, 200, body)
+            status, body = request("tenant-b")
+            self.assertEqual(status, 403, body)
+            self.assertEqual(body.get("error"), "identity_context_mismatch")
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
 
 if __name__ == "__main__":
     unittest.main()
