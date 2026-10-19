@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import os
 import uuid
-from contextlib import closing
 
 import pytest
 from psycopg_pool import ConnectionPool
